@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mariadb:
+    image: 'mariadb:10.2.18'
+    volumes:
+      - ./docker/mariadb:/var/lib/mysql
+    environment:
+      TZ: Europe/Moscow
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    ports:
+      - '4306:3306'
+    networks:
+      - scraper-backend
+
+networks:
+  scraper-backend:
+    external: true
