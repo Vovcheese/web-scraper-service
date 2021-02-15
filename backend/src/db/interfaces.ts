@@ -1,0 +1,13 @@
+export enum ETypePipeline {
+    DOWNLOAD = 'DOWNLOAD',
+    FILESEARCHING = 'FILESEARCHING',
+    GENERATEID = 'GENERATEID',
+    TRANSLATING = 'TRANSLATING',
+}
+
+export enum EStatus {
+    PENDING = 'PENDING',
+    PROGRESS = 'PROGRESS',
+    SUCCESS = 'SUCCESS',
+    ERROR = 'ERROR',
+}

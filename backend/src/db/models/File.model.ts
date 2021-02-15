@@ -1,47 +1,35 @@
-import {
-  Scopes,
-  Table,
-  Column,
-  Model,
-  DataType,
-  AllowNull,
-  Default,
-  ForeignKey,
-  BelongsTo,
-  Unique,
-} from 'sequelize-typescript';
-
+import { Scopes, Table, Column, Model, DataType, AllowNull, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import SiteModel from '@models/Site.model';
-
 import { EStatus } from '@db/interfaces';
 
 @Scopes(() => ({}))
 @Table({
   timestamps: true,
-  tableName: 'Translations',
+  tableName: 'Files',
 })
-class TranslationModel extends Model<TranslationModel> {
+class FileModel extends Model<FileModel> {
   @ForeignKey(() => SiteModel)
-  @Unique('siteId_textId_lang')
   @Column(DataType.INTEGER)
   siteId: number;
 
-  @Unique('siteId_textId_lang')
   @AllowNull(false)
-  @Column(DataType.STRING)
-  textId: string;
+  @Column(DataType.STRING(500))
+  fileName: string;
 
-  @AllowNull(false)
-  @Column(DataType.TEXT)
-  text: string;
+  @Default(0)
+  @Column(DataType.INTEGER)
+  size: number;
 
-  @Unique('siteId_textId_lang')
   @Column(DataType.STRING)
-  lang: string;
+  ext: string;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  default: boolean;
+  isFolder: boolean;
+
+  @Default(0)
+  @Column(DataType.INTEGER)
+  parent: number;
 
   @Default(EStatus.PENDING)
   @Column(DataType.ENUM({ values: Object.values(EStatus) }))
@@ -54,4 +42,4 @@ class TranslationModel extends Model<TranslationModel> {
   site: SiteModel;
 }
 
-export default TranslationModel;
+export default FileModel;

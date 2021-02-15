@@ -1,11 +1,12 @@
-import { Scopes, Table, Column, Model, DataType, AllowNull, Default, HasMany } from 'sequelize-typescript';
+import { Scopes, Table, Column, Model, DataType, AllowNull, Default, HasMany, Unique } from 'sequelize-typescript';
 import TranslationsModel from '@models/Translation.model';
+import PipelineModel from '@models/Pipeline.model';
+import PageModel from '@models/File.model';
 
-export enum StatusParse {
-  PENDING = 'PENDING',
-  SUCCESS = 'SUCCESS',
-  ERROR = 'ERROR',
-}
+import { ETypePipeline } from '@db/interfaces';
+
+
+
 
 @Scopes(() => ({}))
 @Table({
@@ -14,6 +15,7 @@ export enum StatusParse {
 })
 class SiteModel extends Model<SiteModel> {
   @AllowNull(false)
+  @Unique
   @Column(DataType.STRING)
   name: string;
 
@@ -21,15 +23,18 @@ class SiteModel extends Model<SiteModel> {
   @Column(DataType.TEXT)
   url: string;
 
-  @Default(StatusParse.PENDING)
-  @Column(DataType.ENUM({ values: Object.values(StatusParse) }))
-  status: string;
-
-  @Column(DataType.TEXT)
-  error: string;
+  @Default(ETypePipeline.DOWNLOAD)
+  @Column(DataType.ENUM({ values: Object.values(ETypePipeline) }))
+  stage: ETypePipeline;
 
   @HasMany(() => TranslationsModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   translations: TranslationsModel[];
+
+  @HasMany(() => PipelineModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
+  pipelines: PipelineModel[];
+
+  @HasMany(() => PageModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
+  files: PageModel[];
 }
 
 export default SiteModel;

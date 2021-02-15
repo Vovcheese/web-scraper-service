@@ -15,10 +15,13 @@ import routes from '@routes/index';
 
 import '@db/index';
 
+import { webScraperService } from '@services/Scraper/index';
+
 const app = new Koa();
 dotenv.config();
+const viewsPath = path.join(process.cwd(), 'views');
 
-app.use(staticView(path.resolve(__dirname, 'views')));
+app.use(staticView(viewsPath));
 app.use(koaBody());
 app.use(cors());
 
@@ -35,8 +38,8 @@ app.use(async (ctx, next) => {
   ctx.set('X-Response-Time', `${ms}ms`);
 });
 
-app.use(hbs(__dirname, {
-  partialDirs: `${__dirname}/views`,
+app.use(hbs(process.cwd(), {
+  partialDirs: viewsPath,
   extension: 'html',
 }));
 
@@ -58,8 +61,9 @@ app.on('error', (err) => {
   console.log('Error', err);
 });
 
-app.listen(config.server.port, () => {
+app.listen(config.server.port, async () => {
   console.log(`Server listening for ${config.server.port} port...`);
+  // await webScraperService.parseSiteFolder(1);
 });
 
 export default app;

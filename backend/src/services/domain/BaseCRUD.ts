@@ -1,8 +1,10 @@
 import { Repository } from 'sequelize-typescript';
 import {
+  BulkCreateOptions,
   CreateOptions,
   DestroyOptions,
   FindOptions,
+  FindOrCreateOptions,
   Model,
   UpdateOptions,
 } from 'sequelize/types';
@@ -10,15 +12,18 @@ import {
 export default class BaseCRUD<T extends Model> {
   constructor(
     private repository: Repository<T>,
-    public readonly modelClass: new (obj: Partial<T>) => T,
   ) {}
 
   async create(modelObject: Partial<T>, createOptions?: CreateOptions) {
-    const modelInstance = new this.modelClass(modelObject);
+    return this.repository.create(modelObject, createOptions);
+  }
 
-    console.log('modelInstance', modelInstance)
+  async bulkCreate(modelObjects: Partial<T>[], createOptions?: BulkCreateOptions) {
+    return this.repository.bulkCreate(modelObjects, createOptions);
+  }
 
-    return this.repository.create(modelInstance, createOptions);
+  async findOrCreate(createOptions: FindOrCreateOptions) {
+    return this.repository.findOrCreate(createOptions);
   }
 
   async findOne(object: FindOptions) {
@@ -29,8 +34,8 @@ export default class BaseCRUD<T extends Model> {
     return this.repository.findAll(object);
   }
 
-  async update(whereObject: FindOptions, updateObject: UpdateOptions) {
-    return this.repository.update(whereObject, updateObject);
+  async update(modelObject: Partial<T>, updateObject: UpdateOptions) {
+    return this.repository.update(modelObject, updateObject);
   }
 
   async delete(object: DestroyOptions) {

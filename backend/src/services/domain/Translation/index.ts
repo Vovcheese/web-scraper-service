@@ -3,16 +3,16 @@ import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
 import BaseCRUD from '../BaseCRUD';
 
+
+export interface ITranslationService extends BaseCRUD<TranslationModel> {}
 export class TranslationService extends BaseCRUD<TranslationModel> {
   constructor(
     private translationRepositiory: Repository<TranslationModel>,
-    model: new () => TranslationModel,
   ) {
-    super(translationRepositiory, model);
+    super(translationRepositiory);
   }
 }
 
 export default new TranslationService(
   repos.translationRepository,
-  TranslationModel,
 );
