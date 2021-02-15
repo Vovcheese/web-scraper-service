@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import 'module-alias/register';
 
 import Koa from 'koa';
+import send from 'koa-send';
 import staticView from 'koa-static';
 import path from 'path';
 import koaBody from 'koa-bodyparser';
@@ -21,9 +22,26 @@ const app = new Koa();
 dotenv.config();
 const viewsPath = path.join(process.cwd(), 'views');
 
-app.use(staticView(viewsPath));
+app.use(
+  hbs(viewsPath, {
+    viewPath: viewsPath,
+    extension: 'html',
+  }),
+);
 app.use(koaBody());
 app.use(cors());
+
+app.use(async (ctx, next) => {
+  await next();
+  const splitUrl = ctx.url.split('/');
+  const file = splitUrl[splitUrl.length - 1];
+  const splitFile = file.split('.');
+  const ext = splitFile[splitFile.length - 1];
+  if (ctx.method === 'GET' && ext !== 'html') {
+    const redirectUrl = `/${splitUrl[1]}/${splitUrl.slice(3).join('/')}`;
+    await send(ctx, redirectUrl, { root: viewsPath });
+  }
+});
 
 app.use(async (ctx, next) => {
   await next();
@@ -38,14 +56,7 @@ app.use(async (ctx, next) => {
   ctx.set('X-Response-Time', `${ms}ms`);
 });
 
-app.use(hbs(process.cwd(), {
-  partialDirs: viewsPath,
-  extension: 'html',
-}));
-
-app
-  .use(routes.routes())
-  .use(routes.allowedMethods());
+app.use(routes.routes()).use(routes.allowedMethods());
 
 app.use(async (ctx, next) => {
   try {
@@ -63,7 +74,6 @@ app.on('error', (err) => {
 
 app.listen(config.server.port, async () => {
   console.log(`Server listening for ${config.server.port} port...`);
-  // await webScraperService.parseSiteFolder(1);
 });
 
 export default app;

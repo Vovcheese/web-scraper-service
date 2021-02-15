@@ -7,9 +7,11 @@ import translationService from '@services/domain/Translation/index';
 
 const router = new Router();
 
-router.get('/:siteId/:lang', async (ctx: Context) => {
+router.get('/:siteId/:lang/:fileName', async (ctx: Context) => {
+  console.log('alloooo');
   const siteId = Number(ctx.params.siteId);
-  const lang = ctx.params.lang;
+  const lang = ctx.params.lang || 'default';
+  const fileName = ctx.params.fileName || 'index';
 
   let findTexts = await translationService.findAll({
     where: { siteId, lang },
@@ -27,7 +29,7 @@ router.get('/:siteId/:lang', async (ctx: Context) => {
       return acc;
     }, {});
     // console.log(data);
-    await ctx.render(`views/${siteId}/index`, data);
+    await ctx.render(`${siteId}/${fileName}`, data);
   }
 });
 
