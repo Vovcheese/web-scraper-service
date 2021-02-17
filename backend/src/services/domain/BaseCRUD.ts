@@ -1,8 +1,10 @@
 import { Repository } from 'sequelize-typescript';
 import {
   BulkCreateOptions,
+  CountOptions,
   CreateOptions,
   DestroyOptions,
+  FindAndCountOptions,
   FindOptions,
   FindOrCreateOptions,
   Model,
@@ -46,17 +48,14 @@ export default class BaseCRUD<T extends Model> {
     return this.repository.findByPk(id);
   }
 
-  async list(limit: number, page: number) {
+  async list(findOptions: FindAndCountOptions, page: number, limit: number) {
     const offset = (page - 1) * limit;
 
-    return this.repository.findAndCountAll({ limit, offset });
+    return this.repository.findAndCountAll({ ...findOptions, limit, offset });
   }
-}
 
-interface IConstructor<T> {
-  new (...args: any[]): T;
-}
+  async count(findOptions: CountOptions) {
 
-function createInstance<T>(c: { new (obj: T): T }, obj: T): T {
-  return new c(obj);
+    return this.repository.count(findOptions);
+  }
 }

@@ -23,7 +23,7 @@ class PipelineModel extends Model<PipelineModel> {
   @Column(DataType.TEXT)
   error: string;
 
-  @BelongsTo(() => SiteModel, 'siteId')
+  @BelongsTo(() => SiteModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   site: SiteModel;
 }
 

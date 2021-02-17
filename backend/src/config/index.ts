@@ -20,7 +20,7 @@ const config = {
       password: process.env.MYSQL_PASSWORD || 'my-secret-pw',
       storage: ':memory:',
       models: [resolve(`${process.cwd()}/src/db/models/**/*.model.ts`)],
-      logging: true,
+      logging: process.env.NODE_ENV === 'development',
     } as SequelizeOptions,
   },
 };

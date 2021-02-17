@@ -12,6 +12,7 @@ import {
 } from 'sequelize-typescript';
 
 import SiteModel from '@models/Site.model';
+import FileModel from '@models/File.model';
 
 import { EStatus } from '@db/interfaces';
 
@@ -25,6 +26,10 @@ class TranslationModel extends Model<TranslationModel> {
   @Unique('siteId_textId_lang')
   @Column(DataType.INTEGER)
   siteId: number;
+
+  @ForeignKey(() => FileModel)
+  @Column(DataType.INTEGER)
+  fileId: number;
 
   @Unique('siteId_textId_lang')
   @AllowNull(false)
@@ -50,7 +55,7 @@ class TranslationModel extends Model<TranslationModel> {
   @Column(DataType.TEXT)
   error: string;
 
-  @BelongsTo(() => SiteModel, 'siteId')
+  @BelongsTo(() => SiteModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   site: SiteModel;
 }
 

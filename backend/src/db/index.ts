@@ -8,7 +8,7 @@ export const op = Op;
 
 sequelize.authenticate().then(async () => {
   console.log('success connect to db');
-  // await sequelize.sync({ force: true });
+  await sequelize.sync({ alter: true });
 }).catch((error) => {
   console.error('Unable to connect to the database:', error);
 });

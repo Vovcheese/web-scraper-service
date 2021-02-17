@@ -1,11 +1,12 @@
+import { promises as fs } from 'fs';
 import path from 'path';
 import SiteModel from '@models/Site.model';
 import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
 import BaseCRUD from '../BaseCRUD';
 import scrape from 'website-scraper';
-import { webScraperService } from '@services/Scraper/index';
-import { IScraperService } from '@services/Scraper/lib/index';
+import { webScraperService } from '@services/scraper/index';
+import { IScraperService } from '@services/scraper/lib/index';
 import pipelineService, {
   IPipelineService,
 } from '@services/domain/Pipline/index';
@@ -15,30 +16,24 @@ export class SiteService extends BaseCRUD<SiteModel> {
   constructor(
     private siteRepositiory: Repository<SiteModel>,
     private webScraperService: IScraperService<scrape.Options>,
-    private pipelineService: IPipelineService
+    private pipelineService: IPipelineService,
   ) {
     super(siteRepositiory);
   }
   // Stage 1
-  async processDownloadStage(siteName: string, link: string) {
-    const site = await this.create({
-      name: siteName,
-      url: link,
-    });
+  async processDownloadStage(siteId: number, link: string) {
 
-    await this.pipelineService.createPipeline(site.id);
-
-    const siteId: number = site.id;
+    await this.pipelineService.createPipeline(siteId);
 
     try {
       const options: scrape.Options = {
         urls: [link],
-        directory: path.resolve(process.cwd(), 'views', String(site.id)),
+        directory: path.resolve(process.cwd(), 'views', String(siteId)),
       };
       await this.pipelineService.changeStatus(
         siteId,
         EStatus.PROGRESS,
-        ETypePipeline.DOWNLOAD
+        ETypePipeline.DOWNLOAD,
       );
 
       await this.webScraperService.downloadSite(options);
@@ -46,20 +41,17 @@ export class SiteService extends BaseCRUD<SiteModel> {
       await this.pipelineService.changeStatus(
         siteId,
         EStatus.SUCCESS,
-        ETypePipeline.DOWNLOAD
+        ETypePipeline.DOWNLOAD,
       );
     } catch (error) {
-      console.log(error);
       await this.pipelineService.changeStatus(
         siteId,
         EStatus.ERROR,
         ETypePipeline.DOWNLOAD,
-        error.message
+        error.message,
       );
       throw new Error(error);
     }
-
-    return site;
   }
 
   // Stage 2
@@ -122,6 +114,15 @@ export class SiteService extends BaseCRUD<SiteModel> {
         error.message,
       );
       throw new Error(error);
+    }
+  }
+
+  async removeSiteFolder(siteId: number) {
+    const pathFolder = path.join(process.cwd(), 'views', String(siteId));
+    const findFolder = await fs.stat(pathFolder);
+
+    if (findFolder) {
+      await fs.rm(pathFolder, { recursive: true, force: true });
     }
   }
 }

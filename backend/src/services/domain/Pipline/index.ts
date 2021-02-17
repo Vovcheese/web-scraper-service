@@ -44,6 +44,12 @@ export class PiplineService
 
     return this.update(obj, { where: { siteId, type } });
   }
+
+  async reloadStatus(findModel: PiplineModel) {
+    findModel.status = EStatus.PENDING;
+    findModel.error = null;
+    await findModel.save();
+  }
 }
 
 export default new PiplineService(repos.pipelineRepository);

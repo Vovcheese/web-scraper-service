@@ -38,7 +38,7 @@ class FileModel extends Model<FileModel> {
   @Column(DataType.TEXT)
   error: string;
 
-  @BelongsTo(() => SiteModel, 'siteId')
+  @BelongsTo(() => SiteModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   site: SiteModel;
 }
 

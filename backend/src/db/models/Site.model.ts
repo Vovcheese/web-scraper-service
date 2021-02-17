@@ -5,13 +5,11 @@ import PageModel from '@models/File.model';
 
 import { ETypePipeline } from '@db/interfaces';
 
-
-
-
 @Scopes(() => ({}))
 @Table({
   timestamps: true,
   tableName: 'Sites',
+  paranoid: true,
 })
 class SiteModel extends Model<SiteModel> {
   @AllowNull(false)
@@ -22,6 +20,14 @@ class SiteModel extends Model<SiteModel> {
   @AllowNull(false)
   @Column(DataType.TEXT)
   url: string;
+
+  @AllowNull(false)
+  @Column(DataType.TEXT)
+  domain: string;
+
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  active: boolean;
 
   @Default(ETypePipeline.DOWNLOAD)
   @Column(DataType.ENUM({ values: Object.values(ETypePipeline) }))

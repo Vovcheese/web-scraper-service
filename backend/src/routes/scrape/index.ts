@@ -1,40 +1,10 @@
 import Router from '@koa/router';
-import uuid from 'uuid';
-import { Context } from 'koa';
-import siteService from '@services/domain/Site/index';
+import scrapeSite from '@routes/scrape/scrapeSite';
 
 const router = new Router();
 
-router.prefix('/scrape');
-interface IScrapeBody {
-  siteName: string;
-  mainLink: string;
-}
+router.prefix('/api/v1/scrape');
 
-router.post('/', async (ctx: Context) => {
-  const body: IScrapeBody = ctx.request.body;
-
-  if (!body.siteName) {
-    body.siteName = uuid.v4();
-  }
-
-  const findSite = await siteService.findOne({
-    where: { name: body.siteName },
-  });
-
-  if (findSite) {
-    throw new Error('A site with the same name already exists');
-  }
-
-  const site = await siteService.processDownloadStage(body.siteName, body.mainLink);
-
-  await siteService.processFileSearchingStage(site.id);
-
-  const langList = ['it', 'en', 'ru'];
-
-  await siteService.processGenerateTextIdsStage(site.id, langList);
-
-  ctx.body = { success: true };
-});
+router.post('/', scrapeSite);
 
 export default router;

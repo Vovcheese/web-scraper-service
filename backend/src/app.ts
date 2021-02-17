@@ -16,7 +16,7 @@ import routes from '@routes/index';
 
 import '@db/index';
 
-import { webScraperService } from '@services/Scraper/index';
+import siteService from '@services/domain/Site';
 
 const app = new Koa();
 dotenv.config();
@@ -33,12 +33,14 @@ app.use(cors());
 
 app.use(async (ctx, next) => {
   await next();
+  const domain = ctx.header.host;
+  const findSite = await siteService.findOne({ where: { domain, active: true } });
   const splitUrl = ctx.url.split('/');
   const file = splitUrl[splitUrl.length - 1];
   const splitFile = file.split('.');
   const ext = splitFile[splitFile.length - 1];
-  if (ctx.method === 'GET' && ext !== 'html') {
-    const redirectUrl = `/${splitUrl[1]}/${splitUrl.slice(3).join('/')}`;
+  if (!ctx.url.startsWith('/api/v1') && ctx.method === 'GET' && ext !== 'html') {
+    const redirectUrl = `${findSite.id}/${splitUrl.slice(2).join('/')}`;
     await send(ctx, redirectUrl, { root: viewsPath });
   }
 });
