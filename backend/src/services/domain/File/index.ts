@@ -1,6 +1,6 @@
 import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
-import BaseCRUD from '../BaseCRUD';
+import BaseCRUD from '@services/domain/BaseCRUD';
 import FileModel from '@models/File.model';
 
 export interface IFileService extends BaseCRUD<FileModel> {}

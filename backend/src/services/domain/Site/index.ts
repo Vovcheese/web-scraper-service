@@ -3,7 +3,7 @@ import path from 'path';
 import SiteModel from '@models/Site.model';
 import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
-import BaseCRUD from '../BaseCRUD';
+import BaseCRUD from '@services/domain/BaseCRUD';
 import scrape from 'website-scraper';
 import { webScraperService } from '@services/scraper/index';
 import { IScraperService } from '@services/scraper/lib/index';

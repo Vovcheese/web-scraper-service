@@ -1,7 +1,7 @@
 import TranslationModel from '@models/Translation.model';
 import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
-import BaseCRUD from '../BaseCRUD';
+import BaseCRUD from '@services/domain/BaseCRUD';
 
 
 export interface ITranslationService extends BaseCRUD<TranslationModel> {}

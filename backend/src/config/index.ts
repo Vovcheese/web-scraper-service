@@ -1,10 +1,20 @@
 import { resolve } from 'path';
 import { SequelizeOptions } from 'sequelize-typescript';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const host = 'http://localhost';
 const port = 4040;
 
 const config = {
+  app: {
+    auth: {
+      accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
+      accessTokenLife: process.env.ACCESS_TOKEN_LIFE,
+      refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
+      refreshTokenLife: process.env.REFRESH_TOKEN_LIFE,
+    },
+  },
   server: {
     host,
     port,

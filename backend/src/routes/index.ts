@@ -5,11 +5,15 @@ import scrape from '@routes/scrape/index';
 import site from '@routes/site/index';
 import text from '@routes/translate/index';
 import file from '@routes/file/index';
+import auth from '@routes/auth/index';
 
 import siteService from '@services/domain/Site';
 import translationService from '@services/domain/Translation/index';
 
 const router = new Router();
+
+router.use(auth.routes());
+router.use(auth.allowedMethods());
 
 router.use(scrape.routes());
 router.use(scrape.allowedMethods());

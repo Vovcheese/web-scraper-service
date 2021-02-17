@@ -3,13 +3,11 @@ import 'module-alias/register';
 
 import Koa from 'koa';
 import send from 'koa-send';
-import staticView from 'koa-static';
 import path from 'path';
 import koaBody from 'koa-bodyparser';
 import cors from 'koa-cors';
 
 import hbs from 'koa-views-handlebars';
-import dotenv from 'dotenv';
 
 import config from '@config/index';
 import routes from '@routes/index';
@@ -19,8 +17,22 @@ import '@db/index';
 import siteService from '@services/domain/Site';
 
 const app = new Koa();
-dotenv.config();
+
 const viewsPath = path.join(process.cwd(), 'views');
+
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (err) {
+    ctx.status = err.status || 500;
+    ctx.body = err.message;
+    ctx.app.emit('error', err, ctx);
+  }
+});
+
+app.on('error', (err) => {
+  console.log('Error', err);
+});
 
 app.use(
   hbs(viewsPath, {
@@ -28,6 +40,7 @@ app.use(
     extension: 'html',
   }),
 );
+
 app.use(koaBody());
 app.use(cors());
 
@@ -60,21 +73,7 @@ app.use(async (ctx, next) => {
 
 app.use(routes.routes()).use(routes.allowedMethods());
 
-app.use(async (ctx, next) => {
-  try {
-    await next();
-  } catch (err) {
-    ctx.status = err.status || 500;
-    ctx.body = err.message;
-    ctx.app.emit('error', err, ctx);
-  }
-});
-
-app.on('error', (err) => {
-  console.log('Error', err);
-});
-
-app.listen(config.server.port, async () => {
+app.listen(config.server.port, '0.0.0.0', async () => {
   console.log(`Server listening for ${config.server.port} port...`);
 });
 

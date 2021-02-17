@@ -1,7 +1,7 @@
 import PiplineModel from '@models/Pipeline.model';
 import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
-import BaseCRUD from '../BaseCRUD';
+import BaseCRUD from '@services/domain/BaseCRUD';
 import { EStatus, ETypePipeline } from '@db/interfaces';
 
 export interface IPipelineService extends BaseCRUD<PiplineModel> {
