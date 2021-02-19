@@ -57,8 +57,6 @@ export default class AuthService {
     return this.generateJWT(findUser);
   }
 
-  async logout() {}
-
   generateJWT(payload: UserModel) {
     if (!payload) return false;
 
@@ -76,6 +74,7 @@ export default class AuthService {
   }
 
   verifyAccessJWT(token: string) {
+    console.log('token', token);
     return verify(token, config.app.auth.accessTokenSecret) as UserModel;
   }
 

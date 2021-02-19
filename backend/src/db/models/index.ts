@@ -4,6 +4,7 @@ import FileModel from '@models/File.model';
 import TranslationModel from '@models/Translation.model';
 import PipelineModel from '@models/Pipeline.model';
 import UserModel from '@models/User.model';
+import MigrationModel from '@models/Migration.model';
 import { Sequelize } from 'sequelize-typescript';
 
 
@@ -14,6 +15,7 @@ const getRepositories = (sequelize: Sequelize) => {
     pipelineRepository: sequelize.getRepository(PipelineModel),
     fileRepository: sequelize.getRepository(FileModel),
     userRepository: sequelize.getRepository(UserModel),
+    migrationRepository: sequelize.getRepository(MigrationModel),
   };
 };
 

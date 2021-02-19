@@ -8,7 +8,7 @@ interface IWhereObj {
 
 export default async (ctx: Context) => {
   const siteId = Number(ctx.params.siteId);
-  const lang: string = ctx.params.lang || 'all';
+  const lang: string = ctx.query.lang || 'all';
   const page = Number(ctx.query.page) || 1;
   const limit = Number(ctx.query.pageSize) || 50;
 

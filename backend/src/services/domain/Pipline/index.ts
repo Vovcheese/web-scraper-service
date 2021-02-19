@@ -3,6 +3,7 @@ import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
 import BaseCRUD from '@services/domain/BaseCRUD';
 import { EStatus, ETypePipeline } from '@db/interfaces';
+import socket from '@services/socket/index';
 
 export interface IPipelineService extends BaseCRUD<PiplineModel> {
   createPipeline(siteId: number): Promise<PiplineModel[]>;
@@ -41,6 +42,8 @@ export class PiplineService
     if (error) {
       obj.error = error;
     }
+    
+    socket.emit('UPDATE_STATUS_PIPELINE', { siteId, type, status, error })
 
     return this.update(obj, { where: { siteId, type } });
   }

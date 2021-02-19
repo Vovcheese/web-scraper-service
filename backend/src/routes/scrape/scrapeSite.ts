@@ -3,39 +3,39 @@ import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
 
 interface IScrapeBody {
-  siteName: string;
-  mainLink: string;
-  langList: string[];
+  name: string;
+  link: string;
+  languages: string[];
 }
 
 export default async (ctx: Context) => {
   const domain = ctx.request.header.host;
   const body: IScrapeBody = ctx.request.body;
 
-  if (!body.siteName) {
-    body.siteName = uuid.v4();
+  if (!body.name) {
+    body.name = uuid.v4();
   }
 
   const findSite = await siteService.findOne({
-    where: { name: body.siteName },
+    where: { name: body.name },
   });
 
   if (findSite) {
     throw new Error('A site with the same name already exists');
   }
 
-  const site = await siteService.create({ domain, name: body.siteName, url: body.mainLink });
+  const site = await siteService.create({
+    domain,
+    name: body.name,
+    url: body.link,
+  });
 
-  await siteService.processDownloadStage(
-    site.id,
-    site.url,
-  );
+  const langList = body.languages || [];
 
-  await siteService.processFileSearchingStage(site.id);
-
-  const langList = body.langList || [];
-
-  await siteService.processGenerateTextIdsStage(site.id, langList);
+  siteService
+    .processDownloadStage(site.id, site.url)
+    .then((_) => siteService.processFileSearchingStage(site.id))
+    .then((_) => siteService.processGenerateTextIdsStage(site.id, langList, site.url));
 
   ctx.body = { success: true };
 };

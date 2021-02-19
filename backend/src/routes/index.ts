@@ -64,5 +64,4 @@ router.get('/:lang/:fileName', async (ctx: Context) => {
   }
 });
 
-
 export default router;

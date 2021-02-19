@@ -9,7 +9,6 @@ import { ETypePipeline } from '@db/interfaces';
 @Table({
   timestamps: true,
   tableName: 'Sites',
-  paranoid: true,
 })
 class SiteModel extends Model<SiteModel> {
   @AllowNull(false)
@@ -28,10 +27,6 @@ class SiteModel extends Model<SiteModel> {
   @Default(false)
   @Column(DataType.BOOLEAN)
   active: boolean;
-
-  @Default(ETypePipeline.DOWNLOAD)
-  @Column(DataType.ENUM({ values: Object.values(ETypePipeline) }))
-  stage: ETypePipeline;
 
   @HasMany(() => TranslationsModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   translations: TranslationsModel[];

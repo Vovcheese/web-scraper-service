@@ -31,9 +31,9 @@ export default async (ctx: Context) => {
 
   await pipelineService.reloadStatus(findPipeline);
 
-  await translationService.delete({ where: { siteId } });
+  await translationService.delete({ where: { siteId, default: false } });
 
-  await siteService.processGenerateTextIdsStage(findSite.id, body.langList);
+  await siteService.processGenerateTextIdsStage(findSite.id, body.langList, findSite.url);
 
   ctx.body = { success: true };
 };

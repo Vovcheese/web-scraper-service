@@ -21,7 +21,7 @@ export default class WebScraperProvider implements IScraperProvider<scrape.Optio
   }
 
   setOptions(options: scrape.Options) {
-    this.options = { ...this.options, ...options };
+    this.options = { ...this.options, ...options, urlFilter: (url) => url.startsWith(String(options.urls[0]))};
   }
 
   async download() {

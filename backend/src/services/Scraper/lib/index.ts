@@ -11,7 +11,7 @@ import { EStatus } from '@db/interfaces';
 export interface IScraperService<T> {
   downloadSite(options: T): Promise<void>;
   parseSiteFolder(siteId: number): Promise<void>;
-  generateTextIds(siteId: number, langList: string[]): Promise<void>;
+  generateTextIds(siteId: number, langList: string[], url: string): Promise<void>;
 }
 
 export default class ScraperService<T> implements IScraperService<T> {
@@ -61,7 +61,7 @@ export default class ScraperService<T> implements IScraperService<T> {
     }
   }
 
-  async generateTextIds(siteId: number, langList: string[]) {
+  async generateTextIds(siteId: number, langList: string[], url: string) {
     const findFiles = await this.fileService.findAll({
       where: { siteId, ext: '.html', isFolder: false },
     });
@@ -80,10 +80,14 @@ export default class ScraperService<T> implements IScraperService<T> {
 
         const childrens = $('body').children();
 
+        const domain = url.split('/').slice(0, 3).join('/');
+
         const result = await this.searchTextNodeFile(
           $,
           childrens,
           siteId,
+          domain,
+          file.id,
           langList,
         );
 
@@ -105,12 +109,25 @@ export default class ScraperService<T> implements IScraperService<T> {
     $: cheerio.Root,
     childrens: cheerio.Cheerio | cheerio.Element[],
     siteId: number,
+    domain:string,
+    fileId:number,
     langList: string[],
   ) {
     for (const [_, child] of Object.entries(childrens)) {
       if (child.type === 'tag') {
+        if (child.name === 'a') {
+          if (child.attribs && child.attribs.href && child.attribs.href.startsWith(domain)) {
+            child.attribs.href = child.attribs.href.split(domain)[1];
+            if (!child.attribs.href.endsWith('.html')) {
+              const startSlice = child.attribs.href[0] === '/' ? 1 : 0;
+              child.attribs.href = `${child.attribs.href.slice(startSlice, -1)}.html`;
+              const split = child.attribs.href.split('/');
+              child.attribs.href = split[split.length - 1]
+            }
+          }
+        }
         if (child.children) {
-          await this.searchTextNodeFile($, child.children, siteId, langList);
+          await this.searchTextNodeFile($, child.children, siteId, domain, fileId, langList);
         }
       } else if (child.type === 'text') {
         if (child.data.trim().length > 1) {
@@ -123,6 +140,7 @@ export default class ScraperService<T> implements IScraperService<T> {
             promises.push(
               this.translationService.create({
                 siteId,
+                fileId,
                 text,
                 textId: id,
                 default: true,
@@ -132,6 +150,7 @@ export default class ScraperService<T> implements IScraperService<T> {
             for (const lang of langList) {
               promises.push(this.translationService.create({
                 siteId,
+                fileId,
                 text,
                 lang,
                 textId: id,

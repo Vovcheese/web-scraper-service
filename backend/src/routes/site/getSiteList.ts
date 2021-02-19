@@ -12,7 +12,7 @@ interface IListSite {
 
 interface ISiteListStats extends SiteModel {
   countFiles: number;
-  countTexts: number;
+  countWords: number;
 }
 
 interface ICountSite {
@@ -64,8 +64,8 @@ export default async (ctx: Context) => {
 
   list.rows = list.rows.map((site) => {
     const siteJson: Partial<ISiteListStats> = site.toJSON();
-    siteJson.countFiles = mapCountFiles[site.id];
-    siteJson.countTexts = mapCountTexts[site.id];
+    siteJson.countFiles = mapCountFiles[site.id] || 0;
+    siteJson.countWords = mapCountTexts[site.id] || 0;
 
     return siteJson;
   });

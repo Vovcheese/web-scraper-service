@@ -20,6 +20,10 @@ class PipelineModel extends Model<PipelineModel> {
   @Column(DataType.ENUM({ values: Object.values(EStatus) }))
   status: EStatus;
 
+  @Default(0)
+  @Column(DataType.INTEGER)
+  time: number;
+
   @Column(DataType.TEXT)
   error: string;
 

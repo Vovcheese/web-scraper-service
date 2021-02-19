@@ -7,7 +7,7 @@ const router = new Router();
 
 router.prefix('/api/v1/auth');
 
-router.get('/me', authMiddleware , login);
+router.get('/me', authMiddleware, login);
 
 router.post('/login', login);
 

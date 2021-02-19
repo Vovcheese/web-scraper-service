@@ -22,7 +22,6 @@ export class SiteService extends BaseCRUD<SiteModel> {
   }
   // Stage 1
   async processDownloadStage(siteId: number, link: string) {
-
     await this.pipelineService.createPipeline(siteId);
 
     try {
@@ -36,7 +35,16 @@ export class SiteService extends BaseCRUD<SiteModel> {
         ETypePipeline.DOWNLOAD,
       );
 
+      const startTime = Date.now();
+
       await this.webScraperService.downloadSite(options);
+
+      const endTime = Date.now() - startTime;
+
+      this.pipelineService.update(
+        { time: endTime },
+        { where: { siteId, type: ETypePipeline.DOWNLOAD } },
+      );
 
       await this.pipelineService.changeStatus(
         siteId,
@@ -48,7 +56,7 @@ export class SiteService extends BaseCRUD<SiteModel> {
         siteId,
         EStatus.ERROR,
         ETypePipeline.DOWNLOAD,
-        error.message,
+        error.message
       );
       throw new Error(error);
     }
@@ -57,17 +65,22 @@ export class SiteService extends BaseCRUD<SiteModel> {
   // Stage 2
   async processFileSearchingStage(siteId: number) {
     try {
-      await this.update(
-        { stage: ETypePipeline.FILESEARCHING },
-        { where: { id: siteId } },
-      );
       await this.pipelineService.changeStatus(
         siteId,
         EStatus.PROGRESS,
         ETypePipeline.FILESEARCHING,
       );
 
+      const startTime = Date.now();
+
       await this.webScraperService.parseSiteFolder(siteId);
+        
+      const endTime = Date.now() - startTime;
+  
+      this.pipelineService.update(
+        { time: endTime },
+        { where: { siteId, type: ETypePipeline.FILESEARCHING } },
+      );
 
       await this.pipelineService.changeStatus(
         siteId,
@@ -86,19 +99,28 @@ export class SiteService extends BaseCRUD<SiteModel> {
   }
 
   // Stage 3
-  async processGenerateTextIdsStage(siteId: number, langList: string[]) {
+  async processGenerateTextIdsStage(
+    siteId: number,
+    langList: string[],
+    domain: string,
+  ) {
     try {
-      await this.update(
-        { stage: ETypePipeline.GENERATEID },
-        { where: { id: siteId } },
-      );
       await this.pipelineService.changeStatus(
         siteId,
         EStatus.PROGRESS,
         ETypePipeline.GENERATEID,
       );
 
-      await this.webScraperService.generateTextIds(siteId, langList);
+      const startTime = Date.now();
+
+      await this.webScraperService.generateTextIds(siteId, langList, domain);
+
+      const endTime = Date.now() - startTime;
+
+      this.pipelineService.update(
+        { time: endTime },
+        { where: { siteId, type: ETypePipeline.GENERATEID } },
+      );
 
       await this.pipelineService.changeStatus(
         siteId,
@@ -119,11 +141,10 @@ export class SiteService extends BaseCRUD<SiteModel> {
 
   async removeSiteFolder(siteId: number) {
     const pathFolder = path.join(process.cwd(), 'views', String(siteId));
-    const findFolder = await fs.stat(pathFolder);
-
-    if (findFolder) {
-      await fs.rm(pathFolder, { recursive: true, force: true });
-    }
+    try {
+      await fs.stat(pathFolder);
+      await fs.rmdir(pathFolder, { recursive: true });
+    } catch (e) {}
   }
 }
 
