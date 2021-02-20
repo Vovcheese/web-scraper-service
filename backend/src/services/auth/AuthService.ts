@@ -44,7 +44,7 @@ export default class AuthService {
 
     delete findUser.password;
 
-    return { user: findUser, ...this.generateJWT(findUser) };
+    return { user: findUser, ...this.generateJWT(findUser.toJSON()) };
   }
 
   async refreshToken(refreshToken: string) {
