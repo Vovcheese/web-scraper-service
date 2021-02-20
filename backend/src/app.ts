@@ -24,6 +24,8 @@ import run from '@db/run';
 
 import '@services/socket/index';
 
+import { authService } from '@services/auth/index';
+
 dotenv.config()
 
 const app = new Koa();

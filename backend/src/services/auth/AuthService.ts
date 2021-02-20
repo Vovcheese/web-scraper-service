@@ -57,15 +57,13 @@ export default class AuthService {
     return this.generateJWT(findUser);
   }
 
-  generateJWT(payload: UserModel) {
-    if (!payload) return false;
-
-    const accessToken = sign(payload.toJSON(), config.app.auth.accessTokenSecret, {
+  generateJWT(payload: any) {
+    const accessToken = sign(payload, config.app.auth.accessTokenSecret, {
       algorithm: 'HS256',
       expiresIn: config.app.auth.accessTokenLife,
     });
 
-    const refreshToken = sign(payload.toJSON(), config.app.auth.refreshTokenSecret, {
+    const refreshToken = sign(payload, config.app.auth.refreshTokenSecret, {
       algorithm: 'HS256',
       expiresIn: config.app.auth.refreshTokenLife,
     });
