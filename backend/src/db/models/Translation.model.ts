@@ -57,6 +57,9 @@ class TranslationModel extends Model<TranslationModel> {
 
   @BelongsTo(() => SiteModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   site: SiteModel;
+
+  @BelongsTo(() => FileModel, { foreignKey: 'fileId', onDelete: 'CASCADE' })
+  file: FileModel;
 }
 
 export default TranslationModel;
