@@ -72,7 +72,6 @@ export default class AuthService {
   }
 
   verifyAccessJWT(token: string) {
-    console.log('token', token);
     return verify(token, config.app.auth.accessTokenSecret) as UserModel;
   }
 
