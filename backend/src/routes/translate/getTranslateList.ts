@@ -1,6 +1,7 @@
 import { Context } from 'koa';
 import translationService from '@services/domain/Translation/index';
-import {op} from '@db/index';
+import { op } from '@db/index';
+import repos from '@models/index';
 
 interface IWhereObj {
   siteId: number;
@@ -34,6 +35,7 @@ export default async (ctx: Context) => {
 
   const list = await translationService.list(
     {
+      include:[repos.fileRepository, repos.siteRepository],
       where: { ...whereObj },
     },
     page,
