@@ -1,9 +1,7 @@
 import { Scopes, Table, Column, Model, DataType, AllowNull, Default, HasMany, Unique } from 'sequelize-typescript';
 import TranslationsModel from '@models/Translation.model';
 import PipelineModel from '@models/Pipeline.model';
-import PageModel from '@models/File.model';
-
-import { ETypePipeline } from '@db/interfaces';
+import FileModel from '@db/models/File.model';
 
 @Scopes(() => ({}))
 @Table({
@@ -34,8 +32,8 @@ class SiteModel extends Model<SiteModel> {
   @HasMany(() => PipelineModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   pipelines: PipelineModel[];
 
-  @HasMany(() => PageModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
-  files: PageModel[];
+  @HasMany(() => FileModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
+  files: FileModel[];
 }
 
 export default SiteModel;

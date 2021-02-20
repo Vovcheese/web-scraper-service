@@ -1,6 +1,6 @@
 import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
-import SiteModel from '@models/Site.model';
+import SiteModel from '@db/models/Site.model';
 
 export default async (ctx: Context) => {
   const body: Partial<SiteModel> = ctx.request.body;

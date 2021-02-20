@@ -1,11 +1,11 @@
 import sequelize from '@db/index';
-import SiteModel from '@models/Site.model';
-import FileModel from '@models/File.model';
+import SiteModel from '@db/models/Site.model';
 import TranslationModel from '@models/Translation.model';
 import PipelineModel from '@models/Pipeline.model';
 import UserModel from '@models/User.model';
 import MigrationModel from '@models/Migration.model';
 import { Sequelize } from 'sequelize-typescript';
+import FileModel from '@db/models/File.model';
 
 
 const getRepositories = (sequelize: Sequelize) => {

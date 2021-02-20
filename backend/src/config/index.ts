@@ -1,10 +1,14 @@
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { SequelizeOptions } from 'sequelize-typescript';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const host = 'http://localhost';
-const port = 4040;
+const port = 4040
+const modelsPath = process.env.NODE_ENV === 'development' ?
+ resolve(`${process.cwd()}/src/db/models/**/*.model.ts`) :
+ resolve(`${process.cwd()}/dist/db/models/**/*.model.ts`);
 
 const config = {
   app: {
@@ -29,7 +33,7 @@ const config = {
       username: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PASSWORD || 'my-secret-pw',
       storage: ':memory:',
-      models: [resolve(`${process.cwd()}/src/db/models/**/*.model.ts`)],
+      models: [modelsPath],
       logging: process.env.NODE_ENV === 'development',
     } as SequelizeOptions,
   },

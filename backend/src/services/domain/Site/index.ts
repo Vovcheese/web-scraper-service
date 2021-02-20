@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import SiteModel from '@models/Site.model';
+import SiteModel from '@db/models/Site.model';
 import { Repository } from 'sequelize-typescript';
 import repos from '@models/index';
 import BaseCRUD from '@services/domain/BaseCRUD';

@@ -11,8 +11,8 @@ import {
   Unique,
 } from 'sequelize-typescript';
 
-import SiteModel from '@models/Site.model';
-import FileModel from '@models/File.model';
+import SiteModel from '@db/models/Site.model';
+import FileModel from '@db/models/File.model';
 
 import { EStatus } from '@db/interfaces';
 

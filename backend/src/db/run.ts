@@ -6,7 +6,7 @@ export default async (type: string) => {
     const findFiles = await fs.readdir(path.join(__dirname, type))
     for (const file of findFiles) {
         const findMigration = await repos.migrationRepository.findOne({ where: { type, name: file }})
-        
+
         if(!findMigration) {
             try {
                 await import(`@db/${type}/${file}`).then(r => r.up())

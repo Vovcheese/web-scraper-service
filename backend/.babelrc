@@ -1,0 +1,24 @@
+{
+  "presets": [
+    "@babel/preset-typescript",
+    "@babel/preset-env"
+  ],  
+  "plugins": [
+      [
+        "module-resolver",
+        {
+          "root": ["./dist"],
+          "alias": {
+            "@config": "./dist/config",
+            "@routes": "./dist/routes",
+            "@interfaces": "./dist/interfaces",
+            "@services": "./dist/services",
+            "@utils": "./dist/utils",
+            "@models": "./dist/db/models",
+            "@db": "./dist/db",
+            "@middlewares": "./dist/middlewares"
+          }
+        }
+      ]
+    ]
+  }

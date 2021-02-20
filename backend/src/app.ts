@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import 'module-alias/register';
+import './moduleAlias';
 
 import Koa from 'koa';
 import send from 'koa-send';

@@ -2,7 +2,7 @@ import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
 import fileService from '@services/domain/File/index';
 import translationService from '@services/domain/Translation/index';
-import SiteModel from '@models/Site.model';
+import SiteModel from '@db/models/Site.model';
 import repos from '@models/index';
 
 interface IListSite {

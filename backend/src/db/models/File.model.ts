@@ -1,5 +1,5 @@
 import { Scopes, Table, Column, Model, DataType, AllowNull, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import SiteModel from '@models/Site.model';
+import SiteModel from '@db/models/Site.model';
 import { EStatus } from '@db/interfaces';
 
 @Scopes(() => ({}))
