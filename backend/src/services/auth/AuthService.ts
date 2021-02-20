@@ -54,7 +54,7 @@ export default class AuthService {
 
     const findUser = await this.userService.findOne({ where: { id: refreshTokenVerify.id } });
 
-    return this.generateJWT(findUser);
+    return this.generateJWT(findUser.toJSON());
   }
 
   generateJWT(payload: any) {
