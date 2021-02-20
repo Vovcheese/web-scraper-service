@@ -10,11 +10,15 @@ export default async (ctx: Context, next: Next) => {
 
   const token = authHeader.split('Bearer ')[1];
 
-  const verify = authService.verifyAccessJWT(token);
+  try {
+    const verify = authService.verifyAccessJWT(token);
 
-  if (!verify) return ctx.status = 403;
+    if (!verify) return ctx.status = 403;
 
-  ctx.user = verify;
-
+    ctx.user = verify;
+  } catch (error) {
+    return ctx.status = 403;
+  }
+  
   await next();
 };
