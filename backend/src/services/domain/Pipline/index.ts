@@ -2,7 +2,7 @@ import PipelineModel from '@db/models/Pipeline.model';
 import { Repository } from 'sequelize-typescript';
 import BaseCRUD from '@services/domain/BaseCRUD';
 import { EStatus, ETypePipeline } from '@db/interfaces';
-// import socket from '@services/socket/index';
+import { ioserver } from '../../../app';
 import { repos } from '@db/index';
 export interface IPipelineService extends BaseCRUD<PipelineModel> {
   createPipeline(siteId: number): Promise<PipelineModel[]>;
@@ -42,7 +42,7 @@ export class PiplineService
       obj.error = error;
     }
     
-    // socket.emit('UPDATE_STATUS_PIPELINE', { siteId, type, status, error })
+    ioserver.emit('UPDATE_STATUS_PIPELINE', { siteId, type, status, error })
 
     return this.update(obj, { where: { siteId, type } });
   }

@@ -43,7 +43,9 @@ app.use(
 );
 
 app.use(koaBody());
-app.use(cors());
+app.use(cors({
+  origin: "*",
+}));
 
 app.use(async (ctx, next) => {
   await next();
