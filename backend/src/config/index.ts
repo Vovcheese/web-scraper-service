@@ -34,7 +34,7 @@ const config = {
       password: process.env.MYSQL_PASSWORD || 'my-secret-pw',
       storage: ':memory:',
       models: [modelsPath],
-      logging: process.env.NODE_ENV === 'development',
+      logging: false,
     } as SequelizeOptions,
   },
 };

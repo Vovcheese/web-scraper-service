@@ -9,6 +9,10 @@ import { ITranslationService } from '@services/domain/Translation/index';
 import { EStatus } from '@db/interfaces';
 import { ioServer } from '@/app';
 
+interface ISocketData {
+  count: number;
+}
+
 export interface IScraperService<T> {
   downloadSite(options: T): Promise<void>;
   parseSiteFolder(siteId: number): Promise<void>;
@@ -61,7 +65,7 @@ export default class ScraperService<T> implements IScraperService<T> {
 
         if (ext === '.html') {
           countFiles += 1;
-          ioServer.emit('UPDATE_COUNT_FILES', { count: countFiles })
+          ioServer.emit('UPDATE_COUNT_FILES', { siteId ,count: countFiles })
         }
       }
     }
@@ -71,6 +75,8 @@ export default class ScraperService<T> implements IScraperService<T> {
     const findFiles = await this.fileService.findAll({
       where: { siteId, ext: '.html', isFolder: false },
     });
+
+    const socketData =  { count: 0 }
 
     for (const file of findFiles) {
       try {
@@ -88,6 +94,8 @@ export default class ScraperService<T> implements IScraperService<T> {
 
         const domain = url.split('/').slice(0, 3).join('/');
 
+        
+
         const result = await this.searchTextNodeFile(
           $,
           childrens,
@@ -95,6 +103,7 @@ export default class ScraperService<T> implements IScraperService<T> {
           domain,
           file.id,
           langList,
+          socketData
         );
 
         await fs.writeFile(pathFile, result.html(), 'utf-8');
@@ -118,9 +127,8 @@ export default class ScraperService<T> implements IScraperService<T> {
     domain:string,
     fileId:number,
     langList: string[],
-    countTexts = 0
+    socketData: ISocketData
   ) {
-    let count = countTexts;
     for (const [_, child] of Object.entries(childrens)) {
       if (child.type === 'tag') {
         if (child.name === 'a') {
@@ -135,7 +143,7 @@ export default class ScraperService<T> implements IScraperService<T> {
           }
         }
         if (child.children) {
-          await this.searchTextNodeFile($, child.children, siteId, domain, fileId, langList, countTexts);
+          await this.searchTextNodeFile($, child.children, siteId, domain, fileId, langList, socketData);
         }
       } else if (child.type === 'text') {
         if (child.data.trim().length > 1) {
@@ -155,8 +163,7 @@ export default class ScraperService<T> implements IScraperService<T> {
               }),
             );
 
-            count += 1;
-            ioServer.emit('UPDATE_COUNT_FILES', { count })
+            socketData.count += 1;
             
             for (const lang of langList) {
               promises.push(this.translationService.create({
@@ -167,8 +174,10 @@ export default class ScraperService<T> implements IScraperService<T> {
                 textId: id,
                 default: false,
               }));
-              count += 1;
-              ioServer.emit('UPDATE_COUNT_FILES', { count })
+              socketData.count += 1;
+              if(socketData.count % 1000 === 0) {
+                ioServer.emit('UPDATE_COUNT_TRANSLATES', { siteId, ...socketData })
+              }
             }
 
             await Promise.all(promises);
