@@ -4,6 +4,7 @@ import BaseCRUD from '@services/domain/BaseCRUD';
 import { repos, op } from '@db/index';
 import { ITranslaterService, translaterService } from '@services/translater/index';
 import { EStatus } from '@db/interfaces';
+import { ioServer } from '@/app';
 
 
 
@@ -25,7 +26,7 @@ export class TranslationService extends BaseCRUD<TranslationModel> {
 
     do {
       findTranslations = await this.findAll({ where: { siteId, id: { [op.gt]: lastId }, status: { [op.ne]: EStatus.SUCCESS } }, order: ['id', 'ASC'], limit: 1000 });
-
+      let countTranslate = 0
       for (const translation of findTranslations) {
         try {
           translation.status = EStatus.PROGRESS
@@ -35,6 +36,8 @@ export class TranslationService extends BaseCRUD<TranslationModel> {
           translation.text = translationData.outputText;
           translation.status = EStatus.SUCCESS;
           await translation.save();
+          countTranslate += 1;
+          ioServer.emit('UPDATE_COUNT_TRANSLATES', { count: countTranslate })
         } catch (error) {
           translation.status = EStatus.ERROR
           translation.error = error.message

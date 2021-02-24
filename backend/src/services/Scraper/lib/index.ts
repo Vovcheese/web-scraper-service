@@ -7,6 +7,7 @@ import { IFileService } from '@services/domain/File/index';
 import { IScraperProvider } from './providers/interfaces';
 import { ITranslationService } from '@services/domain/Translation/index';
 import { EStatus } from '@db/interfaces';
+import { ioServer } from '@/app';
 
 export interface IScraperService<T> {
   downloadSite(options: T): Promise<void>;
@@ -30,7 +31,7 @@ export default class ScraperService<T> implements IScraperService<T> {
     const pathFolder = path.join(process.cwd(), 'views', String(siteId));
     await fs.stat(pathFolder);
     const files = await fs.readdir(pathFolder);
-
+    let countFiles = 0;
     for (const file of files) {
       const pathFile = path.join(pathFolder, file);
       const stats = await fs.lstat(pathFile);
@@ -57,6 +58,11 @@ export default class ScraperService<T> implements IScraperService<T> {
           size,
           siteId,
         });
+
+        if (ext === '.html') {
+          countFiles += 1;
+          ioServer.emit('UPDATE_COUNT_FILES', { count: countFiles })
+        }
       }
     }
   }
@@ -112,7 +118,9 @@ export default class ScraperService<T> implements IScraperService<T> {
     domain:string,
     fileId:number,
     langList: string[],
+    countTexts = 0
   ) {
+    let count = countTexts;
     for (const [_, child] of Object.entries(childrens)) {
       if (child.type === 'tag') {
         if (child.name === 'a') {
@@ -127,7 +135,7 @@ export default class ScraperService<T> implements IScraperService<T> {
           }
         }
         if (child.children) {
-          await this.searchTextNodeFile($, child.children, siteId, domain, fileId, langList);
+          await this.searchTextNodeFile($, child.children, siteId, domain, fileId, langList, countTexts);
         }
       } else if (child.type === 'text') {
         if (child.data.trim().length > 1) {
@@ -147,6 +155,9 @@ export default class ScraperService<T> implements IScraperService<T> {
               }),
             );
 
+            count += 1;
+            ioServer.emit('UPDATE_COUNT_FILES', { count })
+            
             for (const lang of langList) {
               promises.push(this.translationService.create({
                 siteId,
@@ -156,6 +167,8 @@ export default class ScraperService<T> implements IScraperService<T> {
                 textId: id,
                 default: false,
               }));
+              count += 1;
+              ioServer.emit('UPDATE_COUNT_FILES', { count })
             }
 
             await Promise.all(promises);

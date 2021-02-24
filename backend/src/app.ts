@@ -10,7 +10,7 @@ export const server = createServer(app.callback()).listen(
   }
 )
 
-export const ioserver = new Server(server, {
+export const ioServer = new Server(server, {
   cors: {
     origin: "http://localhost:8080",
     methods: ["GET", "POST"],
@@ -18,6 +18,6 @@ export const ioserver = new Server(server, {
   },
 })
 
-ioserver.on("connection", (socket: Socket) => {
+ioServer.on("connection", (socket: Socket) => {
   console.log("Connection", socket.id)
 })

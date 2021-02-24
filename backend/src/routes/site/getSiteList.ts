@@ -5,6 +5,7 @@ import translationService from '@services/domain/Translation/index';
 import SiteModel from '@db/models/Site.model';
 import sequelize from '@db/index';
 import PipelineModel from '@db/models/Pipeline.model';
+import { EStatus } from '@/db/interfaces';
 
 interface IListSite {
   rows: Partial<ISiteListStats>[];
@@ -14,6 +15,7 @@ interface IListSite {
 interface ISiteListStats extends SiteModel {
   countFiles: number;
   countWords: number;
+  countTranslatedWords: number;
 }
 
 interface ICountSite {
@@ -54,6 +56,12 @@ export default async (ctx: Context) => {
     group: 'siteId',
   })) as unknown) as ICountSite[];
 
+  const countTranslatedTexts = ((await translationService.count({
+    attributes: ['siteId'],
+    where: { status: EStatus.SUCCESS },
+    group: 'siteId',
+  })) as unknown) as ICountSite[];
+
   const mapCountFiles: ICountMap = countFiles.reduce((acc, result) => {
     if (!acc[result.siteId]) acc[result.siteId] = result.count;
 
@@ -66,10 +74,17 @@ export default async (ctx: Context) => {
     return acc;
   }, {} as ICountMap);
 
+  const mapCountTranslatedTexts: ICountMap = countTranslatedTexts.reduce((acc, result) => {
+    if (!acc[result.siteId]) acc[result.siteId] = result.count;
+
+    return acc;
+  }, {} as ICountMap);
+
   list.rows = list.rows.map((site) => {
     const siteJson: Partial<ISiteListStats> = site.toJSON();
     siteJson.countFiles = mapCountFiles[site.id] || 0;
     siteJson.countWords = mapCountTexts[site.id] || 0;
+    siteJson.countTranslatedWords = mapCountTranslatedTexts[site.id] || 0;
 
     return siteJson;
   });

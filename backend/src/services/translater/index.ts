@@ -19,7 +19,7 @@ class TranslatteProvider implements ItranslaterProvider {
 
     async translate(text: string, lang: string) {
         const result: ITranslateResponse = { inputText: text, outputText: '' }
-        const translateData = await translater(text, { to: lang });
+        const translateData = await translater( text, { to: lang } );
         result.outputText = translateData.text;
         return result
     }

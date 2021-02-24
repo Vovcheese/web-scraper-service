@@ -1,7 +1,7 @@
 import moduleAlias from 'module-alias'
 
 moduleAlias.addAliases({
-  '@root': `${__dirname}`,
+  '@': `${__dirname}`,
   '@config': `${__dirname}/config`,
   '@routes': `${__dirname}/routes`,
   '@interfaces': `${__dirname}/interfaces`,
