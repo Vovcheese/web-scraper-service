@@ -73,7 +73,7 @@
     "lint": "tslint --fix --project tsconfig.json --format stylish",
     "dev": "NODE_ENV=development ts-node-dev -r tsconfig-paths/register --respawn --transpile-only ./src/app.ts",
     "prod": "npm run build && node -r ./dist/app.js",
-    "build": "tsc -p . ",
+    "build": "tsc",
     "fix-paths": "tspath -f",
     "serve": "node -r tsconfig-paths/register -r ts-node ./src/app.ts",
     "start": "babel-node --extensions \".js\" dist/app.js"

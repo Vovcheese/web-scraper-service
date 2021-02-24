@@ -1,12 +1,11 @@
 import { Repository } from 'sequelize-typescript';
-import repos from '@models/index';
 import BaseCRUD from '@services/domain/BaseCRUD';
-import UserModel from '@models/User.model';
-
+import UserModel from '@db/models/User.model';
+import { repos } from '@db/index';
 
 export interface IUserService extends BaseCRUD<UserModel> {}
 
-export class TranslationService extends BaseCRUD<UserModel> {
+export class UserService extends BaseCRUD<UserModel> {
   constructor(
     private userRepositiory: Repository<UserModel>,
   ) {
@@ -14,6 +13,6 @@ export class TranslationService extends BaseCRUD<UserModel> {
   }
 }
 
-export default new TranslationService(
-  repos.userRepository,
+export default new UserService(
+  repos.userRepositiory,
 );

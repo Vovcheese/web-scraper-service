@@ -1,7 +1,8 @@
 import { Context } from 'koa';
 import translationService from '@services/domain/Translation/index';
-import { op } from '@db/index';
-import repos from '@models/index';
+import sequelize, { op } from '@db/index';
+import FileModel from '@db/models/File.model';
+import SiteModel from '@db/models/Site.model';
 
 interface IWhereObj {
   siteId: number;
@@ -17,6 +18,9 @@ export default async (ctx: Context) => {
   const query: boolean = ctx.query.query;
   const page = Number(ctx.query.page) || 1;
   const limit = Number(ctx.query.pageSize) || 50;
+
+  const fileRepository = sequelize.getRepository(FileModel)
+  const siteRepository = sequelize.getRepository(SiteModel)
 
   const whereObj: IWhereObj = { siteId };
 
@@ -35,7 +39,7 @@ export default async (ctx: Context) => {
 
   const list = await translationService.list(
     {
-      include:[repos.fileRepository, repos.siteRepository],
+      include:[fileRepository, siteRepository],
       where: { ...whereObj },
     },
     page,

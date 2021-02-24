@@ -1,11 +1,11 @@
-import io, { Socket } from 'socket.io';
-import server from '../../app';
+// import io, { Socket } from 'socket.io';
+// import server from '';
 
-const ioserver = new io.Server(server)
+// const ioserver = new io.Server(server)
 
-ioserver.on('connection', (socket: Socket) => {
-    console.log('Connection', socket);
-});
+// ioserver.on('connection', (socket: Socket) => {
+//     console.log('Connection', socket);
+// });
 
 
-export default ioserver
+// export default ioserver

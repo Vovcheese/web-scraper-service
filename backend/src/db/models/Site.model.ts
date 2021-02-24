@@ -1,6 +1,6 @@
 import { Scopes, Table, Column, Model, DataType, AllowNull, Default, HasMany, Unique } from 'sequelize-typescript';
-import TranslationsModel from '@models/Translation.model';
-import PipelineModel from '@models/Pipeline.model';
+import TranslationsModel from '@db/models/Translation.model';
+import PipelineModel from '@db/models/Pipeline.model';
 import FileModel from '@db/models/File.model';
 
 @Scopes(() => ({}))

@@ -15,28 +15,28 @@
     "baseUrl": "src",
     "paths": {
       "@config/*": [
-        "/config/*"
+        "config/*"
       ],
       "@interfaces/*": [
-        "/interfaces/*"
+        "interfaces/*"
       ],
       "@routes/*": [
-        "/routes/*"
+        "routes/*"
       ],
       "@services/*": [
-        "/services/*"
+        "services/*"
       ],
       "@utils/*": [
-        "/utils/*"
+        "utils/*"
       ],
       "@models/*": [
-        "/db/models/*"
+        "db/models/*"
       ],
       "@db/*": [
-        "/db/*"
+        "db/*"
       ],
       "@middlewares/*": [
-        "/middlewares/*"
+        "middlewares/*"
       ]
     },
     "esModuleInterop": true,

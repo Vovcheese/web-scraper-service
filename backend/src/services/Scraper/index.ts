@@ -1,6 +1,6 @@
 import scrape from 'website-scraper';
-import ScraperService from './lib/index';
-import WebScraperProvider from './lib/providers/WebScraperProvider';
+import ScraperService from '@services/scraper/lib/index';
+import WebScraperProvider from '@services/scraper/lib/providers/WebScraperProvider';
 import fileService from '@services/domain/File/index';
 import translationService from '@services/domain/Translation/index';
 

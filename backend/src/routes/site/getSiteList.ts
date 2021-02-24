@@ -3,7 +3,8 @@ import siteService from '@services/domain/Site/index';
 import fileService from '@services/domain/File/index';
 import translationService from '@services/domain/Translation/index';
 import SiteModel from '@db/models/Site.model';
-import repos from '@models/index';
+import sequelize from '@db/index';
+import PipelineModel from '@db/models/Pipeline.model';
 
 interface IListSite {
   rows: Partial<ISiteListStats>[];
@@ -28,9 +29,12 @@ export default async (ctx: Context) => {
   const domain = ctx.header.host;
   const page = Number(ctx.query.page) || 1;
   const limit = Number(ctx.query.pageSize) || 50;
+
+  const pipelineRepository = sequelize.getRepository(PipelineModel)
+
   const list = (await siteService.list(
     {
-      include: [repos.pipelineRepository],
+      include: [pipelineRepository],
       where: { domain },
     },
     page,

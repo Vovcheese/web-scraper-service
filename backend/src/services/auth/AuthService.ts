@@ -1,4 +1,4 @@
-import UserModel from '@models/User.model';
+import UserModel from '@db/models/User.model';
 import { IUserService } from '@services/domain/User';
 import { genSaltSync, hashSync, compareSync } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
@@ -13,7 +13,6 @@ interface ILoginBody {
   login: string;
   password: string;
 }
-
 export default class AuthService {
   constructor (private userService: IUserService) {}
 

@@ -5,10 +5,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const host = 'http://localhost';
-const port = 4040
+const port = 4050
 const modelsPath = process.env.NODE_ENV === 'development' ?
  resolve(`${process.cwd()}/src/db/models/**/*.model.ts`) :
- resolve(`${process.cwd()}/dist/db/models/**/*.model.ts`);
+ resolve(`${process.cwd()}/dist/db/models/**/*.model.js`);
 
 const config = {
   app: {
