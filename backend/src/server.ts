@@ -44,7 +44,7 @@ app.use(
 
 app.use(koaBody());
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:8080",
 }));
 
 app.use(async (ctx, next) => {

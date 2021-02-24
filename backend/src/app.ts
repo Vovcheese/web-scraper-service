@@ -19,5 +19,5 @@ export const ioserver = new Server(server, {
 })
 
 ioserver.on("connection", (socket: Socket) => {
-  console.log("Connection", socket)
+  console.log("Connection", socket.id)
 })
