@@ -7,6 +7,8 @@ export default async (type: string) => {
     const migrationRepo = sequelize.getRepository(MigrationModel);
     const findFiles = await fs.readdir(path.join(__dirname, type))
     for (const file of findFiles) {
+        if (file === '.gitkeep') continue;
+        
         const findMigration = await migrationRepo.findOne({ where: { type, name: file }})
 
         if(!findMigration) {

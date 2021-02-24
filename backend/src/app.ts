@@ -1,7 +1,6 @@
-import io, { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import { createServer } from 'http';
 import app from './server';
-import sequelize  from '@db/index';
 import config from "@config/index";
 
 (async () => {
@@ -10,7 +9,11 @@ import config from "@config/index";
     console.log(`Server listen on port ${config.server.port}`);
   });
 
-  const ioserver = new io.Server(server)
+  const ioserver = new Server(server, { cors: {
+    origin: "http://localhost:8080",
+    methods: ["GET", "POST"],
+    credentials: true
+  }})
 
   ioserver.on('connection', (socket: Socket) => {
       console.log('Connection', socket);
