@@ -1,6 +1,6 @@
 import { Context } from 'koa';
 import fileService from '@services/domain/File/index';
-import fs from 'fs';
+import {promises as fs} from 'fs';
 import path from 'path';
 
 export default async (ctx: Context) => {
@@ -14,10 +14,8 @@ export default async (ctx: Context) => {
   );
 
   if (!findFile) throw new Error('File nit found')
-  const readStream = fs.createReadStream(body);
-  const writeStream = fs.createWriteStream(path.join(process.cwd(), 'views', String(findFile.siteId), findFile.fileName));
-
-  readStream.pipe(writeStream)
+  
+  await fs.writeFile(path.join(process.cwd(), 'views', String(findFile.siteId), findFile.fileName), body);
 
   ctx.body = { success: true };
 };

@@ -1,9 +1,10 @@
 import translater from 'translatte';
 import axios from 'axios';
 import config from '@config/index';
+import TranslationModel from '@/db/models/Translation.model';
 
 export interface ITranslaterService {
-    translate(text: string, lang: string): Promise<ITranslateResponse>
+    translate(translation: TranslationModel): Promise<ITranslateResponse>
 }
 
 interface IDeeplResponse {
@@ -18,6 +19,7 @@ interface IDeeplResponse {
 interface ITranslateResponse {
     inputText: string;
     outputText: string;
+    translation?: TranslationModel;
     detectLanguage?: string;
 }
 
@@ -29,7 +31,7 @@ class TranslatteProvider implements ItranslaterProvider {
     constructor() {}
 
     async translate(text: string, lang: string) {
-        const result: ITranslateResponse = { inputText: text, outputText: '' }
+        const result: ITranslateResponse = { inputText: text, outputText: '' };
         const translateData = await translater( text, { to: lang } );
         result.outputText = translateData.text;
         return result
@@ -65,8 +67,10 @@ class DeeplProvider implements ItranslaterProvider {
 class TranslaterService implements ITranslaterService{
     constructor(private translaterProvider: ItranslaterProvider) {}
 
-    translate(text: string, lang: string) {
-        return this.translaterProvider.translate(text, lang)
+    async translate(translation: TranslationModel) {
+        const result = await this.translaterProvider.translate(translation.text, translation.lang)
+        result.translation = translation
+        return result
     }
 
 }

@@ -24,6 +24,8 @@ export class TranslationService extends BaseCRUD<TranslationModel> implements IT
     let lastId = 0;
     let findTranslations: TranslationModel[] = []
 
+    let countTranslate = await this.count({where: { siteId, default: true}});
+
     do {
       findTranslations = await this.findAll({ 
         where: {
@@ -33,29 +35,42 @@ export class TranslationService extends BaseCRUD<TranslationModel> implements IT
           status: { [op.ne]: EStatus.SUCCESS } 
         }, 
         order: [['id', 'ASC']], 
-        limit: limit || 1000 
+        limit: limit || 500 
       });
 
-      let countTranslate = 0
+      
+      const promises = [];
       for (const translation of findTranslations) {
         try {
           translation.status = EStatus.PROGRESS;
           translation.error = null;
           await translation.save()
           lastId = translation.id;
-          const translationData = await this.translaterService.translate(translation.text, translation.lang);
-          console.log('translationData', translationData)
-          translation.text = translationData.outputText;
-          translation.status = EStatus.SUCCESS;
-          await translation.save();
-          countTranslate += 1;
-          ioServer.emit('UPDATE_COUNT_TRANSLATES', { siteId, count: countTranslate });
+
+          promises.push(this.translaterService.translate(translation));
+
         } catch (error) {
           translation.status = EStatus.ERROR;
           translation.error = error.message;
           await translation.save();
         }
       }
+
+      
+
+      try {
+        const results = await Promise.all(promises);
+        for (const result of results) {
+          result.translation.text = result.outputText;
+          result.translation.status = EStatus.SUCCESS;
+          await result.translation.save()
+        }
+        countTranslate += results.length || 0;
+        ioServer.emit('UPDATE_COUNT_TRANSLATES', { siteId, count: countTranslate });
+      } catch (error) {
+        console.log(error)
+      }
+      
 
     } while (!limit && findTranslations && findTranslations.length !== 0);
   }

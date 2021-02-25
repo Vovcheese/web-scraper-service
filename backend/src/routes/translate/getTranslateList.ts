@@ -9,6 +9,7 @@ interface IWhereObj {
   lang?: string;
   default?: boolean;
   text?: { [op.like]: string; };
+  status?: { [op.in]: string[] }
 }
 
 export default async (ctx: Context) => {
@@ -18,6 +19,7 @@ export default async (ctx: Context) => {
   const query: boolean = ctx.query.query;
   const page = Number(ctx.query.page) || 1;
   const limit = Number(ctx.query.pageSize) || 50;
+  const statuses = ctx.query.statuses
 
   const fileRepository = sequelize.getRepository(FileModel)
   const siteRepository = sequelize.getRepository(SiteModel)
@@ -35,6 +37,10 @@ export default async (ctx: Context) => {
   if (isDefault) {
     delete whereObj.lang;
     whereObj.default = isDefault;
+  }
+
+  if(Array.isArray(statuses) && statuses.length > 0) {
+    whereObj.status = { [op.in]: statuses }
   }
 
   const list = await translationService.list(

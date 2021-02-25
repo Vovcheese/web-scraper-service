@@ -16,6 +16,7 @@ interface ISiteListStats extends SiteModel {
   countFiles: number;
   countWords: number;
   countTranslatedWords: number;
+  countDefaultWords: number;
 }
 
 interface ICountSite {
@@ -51,15 +52,21 @@ export default async (ctx: Context) => {
     group: 'siteId',
   })) as unknown) as ICountSite[];
 
-  const countTexts = ((await translationService.count({
+  const countAllTexts = ((await translationService.count({
     attributes: ['siteId'],
+    group: 'siteId',
+  })) as unknown) as ICountSite[];
+
+  const countDefaultTexts = ((await translationService.count({
+    attributes: ['siteId'],
+    where: { default: true },
     group: 'siteId',
   })) as unknown) as ICountSite[];
 
   const countTranslatedTexts = ((await translationService.count({
     attributes: ['siteId'],
     where: {
-      [op.or]: [{ status: EStatus.SUCCESS }, { default: true }]
+      status: EStatus.SUCCESS 
     },
     group: 'siteId',
   })) as unknown) as ICountSite[];
@@ -70,7 +77,7 @@ export default async (ctx: Context) => {
     return acc;
   }, {} as ICountMap);
 
-  const mapCountTexts: ICountMap = countTexts.reduce((acc, result) => {
+  const mapCountAllTexts: ICountMap = countAllTexts.reduce((acc, result) => {
     if (!acc[result.siteId]) acc[result.siteId] = result.count;
 
     return acc;
@@ -82,10 +89,17 @@ export default async (ctx: Context) => {
     return acc;
   }, {} as ICountMap);
 
+  const mapCountDefaultTexts: ICountMap = countDefaultTexts.reduce((acc, result) => {
+    if (!acc[result.siteId]) acc[result.siteId] = result.count;
+
+    return acc;
+  }, {} as ICountMap);
+
   list.rows = list.rows.map((site) => {
     const siteJson: Partial<ISiteListStats> = site.toJSON();
     siteJson.countFiles = mapCountFiles[site.id] || 0;
-    siteJson.countWords = mapCountTexts[site.id] || 0;
+    siteJson.countWords = mapCountAllTexts[site.id] || 0;
+    siteJson.countDefaultWords = mapCountDefaultTexts[site.id] || 0;
     siteJson.countTranslatedWords = mapCountTranslatedTexts[site.id] || 0;
 
     return siteJson;
