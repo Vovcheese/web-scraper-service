@@ -118,6 +118,8 @@ export default class ScraperService<T> implements IScraperService<T> {
         throw new Error(error);
       }
     }
+
+    ioServer.emit('UPDATE_COUNT_WORDS', { siteId, ...socketData })
   }
 
   async searchTextNodeFile(
@@ -176,7 +178,7 @@ export default class ScraperService<T> implements IScraperService<T> {
               }));
               socketData.count += 1;
               if(socketData.count % 1000 === 0) {
-                ioServer.emit('UPDATE_COUNT_TRANSLATES', { siteId, ...socketData })
+                ioServer.emit('UPDATE_COUNT_WORDS', { siteId, ...socketData })
               }
             }
 

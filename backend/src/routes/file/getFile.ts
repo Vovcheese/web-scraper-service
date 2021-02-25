@@ -8,7 +8,7 @@ export default async (ctx: Context) => {
 
   const findFile = await fileService.findOne(
     {
-      where: { fileId },
+      where: { id: fileId },
     }
   );
 

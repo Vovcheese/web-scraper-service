@@ -3,7 +3,7 @@ import siteService from '@services/domain/Site/index';
 import fileService from '@services/domain/File/index';
 import translationService from '@services/domain/Translation/index';
 import SiteModel from '@db/models/Site.model';
-import sequelize from '@db/index';
+import sequelize, { op } from '@db/index';
 import PipelineModel from '@db/models/Pipeline.model';
 import { EStatus } from '@/db/interfaces';
 
@@ -58,7 +58,9 @@ export default async (ctx: Context) => {
 
   const countTranslatedTexts = ((await translationService.count({
     attributes: ['siteId'],
-    where: { status: EStatus.SUCCESS },
+    where: {
+      [op.or]: [{ status: EStatus.SUCCESS }, { default: true }]
+    },
     group: 'siteId',
   })) as unknown) as ICountSite[];
 

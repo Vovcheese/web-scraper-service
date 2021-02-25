@@ -1,6 +1,7 @@
 import uuid from 'uuid';
 import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
+import pipelineService from '@services/domain/Pipline/index';
 
 interface IScrapeBody {
   name: string;
@@ -32,10 +33,10 @@ export default async (ctx: Context) => {
 
   const langList = body.languages || [];
 
-  siteService
+  pipelineService
     .processDownloadStage(site.id, site.url)
-    .then((_) => siteService.processFileSearchingStage(site.id))
-    .then((_) => siteService.processGenerateTextIdsStage(site.id, langList, site.url));
+    .then((_) => pipelineService.processFileSearchingStage(site.id))
+    .then((_) => pipelineService.processGenerateTextIdsStage(site.id, langList, site.url));
 
   ctx.body = { success: true };
 };

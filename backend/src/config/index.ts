@@ -37,6 +37,9 @@ const config = {
       logging: false,
     } as SequelizeOptions,
   },
+  deepl: {
+    apiKey: process.env.DEEPL_API_KEY || 'f545f956-fb34-4bf3-e37d-881edfee4ca3'
+  }
 };
 
 export default config;

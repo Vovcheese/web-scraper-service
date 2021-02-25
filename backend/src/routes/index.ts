@@ -6,6 +6,7 @@ import site from '@routes/site/index';
 import text from '@routes/translate/index';
 import file from '@routes/file/index';
 import auth from '@routes/auth/index';
+import pipeline from '@routes/pipeline/index';
 
 import siteService from '@services/domain/Site';
 import translationService from '@services/domain/Translation/index';
@@ -26,6 +27,9 @@ router.use(text.allowedMethods());
 
 router.use(file.routes());
 router.use(file.allowedMethods());
+
+router.use(pipeline.routes());
+router.use(pipeline.allowedMethods());
 
 router.get('/:lang', async (ctx: Context) => {
   ctx.redirect(`/${ctx.params.lang}/index.html`);

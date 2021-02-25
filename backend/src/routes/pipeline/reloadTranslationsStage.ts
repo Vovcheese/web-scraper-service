@@ -1,16 +1,16 @@
 import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
-import translationService from '@services/domain/Translation/index';
 import pipelineService from '@services/domain/Pipline/index';
-import { EStatus, ETypePipeline } from '@db/interfaces';
-import { translaterService } from '@services/translater/index';
+import { ETypePipeline } from '@db/interfaces';
 
 interface IBody {
   langList: string[];
 }
 
 export default async (ctx: Context) => {
+  const body = ctx.request.body
   const siteId = Number(ctx.params.siteId);
+  const limit = Number(body.limit) || 0;
 
   const findSite = await siteService.findOne({ where: { id: siteId } });
 
@@ -27,7 +27,7 @@ export default async (ctx: Context) => {
 
   await pipelineService.reloadStatus(findPipeline);
 
-  await siteService.processTranslationStage(findSite.id);
+  await pipelineService.processTranslationStage(findSite.id, limit);
 
   ctx.body = { success: true };
 };
