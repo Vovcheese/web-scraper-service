@@ -10,6 +10,7 @@
     "dotenv": "^8.2.0",
     "handlebars": "^4.7.6",
     "jsonwebtoken": "^8.5.1",
+    "koa-body": "^4.2.0",
     "koa-cors": "0.0.16",
     "koa-json": "^2.0.2",
     "koa-logger": "^3.2.1",

@@ -4,7 +4,7 @@ import './moduleAlias';
 import Koa from 'koa';
 import send from 'koa-send';
 import path from 'path';
-import koaBody from 'koa-bodyparser';
+import koaBody from 'koa-body';
 import cors from 'koa-cors';
 
 import hbs from 'koa-views-handlebars';
@@ -42,7 +42,7 @@ app.use(
   })
 );
 
-app.use(koaBody());
+app.use(koaBody({ multipart: true }));
 app.use(cors({
   origin: "http://localhost:8080",
 }));
