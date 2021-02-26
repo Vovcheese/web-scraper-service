@@ -1,7 +1,7 @@
-import { Socket, Server } from "socket.io"
-import { createServer } from "http"
-import app from "./server"
-import config from "@config/index"
+import { Socket, Server } from "socket.io";
+import { createServer } from "http";
+import app from "./server";
+import config from "@config/index";
 
 export const server = createServer(app.callback()).listen(
   config.server.port,

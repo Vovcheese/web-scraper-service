@@ -14,7 +14,6 @@ interface IDeeplResponse {
             text:string,
         }[]
     }
-    
 }
 interface ITranslateResponse {
     inputText: string;
