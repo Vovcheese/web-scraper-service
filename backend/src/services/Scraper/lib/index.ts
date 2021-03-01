@@ -25,17 +25,22 @@ export default class ScraperService<T> implements IScraperService<T> {
     private fileService: IFileService,
     private translationService: ITranslationService,
   ) {}
-
+  
+  // Stage 1
   async downloadSite(options: T) {
     this.scraperProvider.setOptions(options);
     await this.scraperProvider.download();
   }
 
+  // Stage 2
   async parseSiteFolder(siteId: number) {
     const pathFolder = path.join(process.cwd(), 'views', String(siteId));
     await fs.stat(pathFolder);
+    await this.scanFolder(pathFolder, siteId, 0, 0)
+  }
+
+  async scanFolder(pathFolder:string, siteId: number, parent: number, countFiles: number) {
     const files = await fs.readdir(pathFolder);
-    let countFiles = 0;
     for (const file of files) {
       const pathFile = path.join(pathFolder, file);
       const stats = await fs.lstat(pathFile);
@@ -51,26 +56,33 @@ export default class ScraperService<T> implements IScraperService<T> {
           fileName,
           size,
           siteId,
+          parent,
         },
       });
 
       if (!findFile) {
-        await this.fileService.create({
+        const newFile = await this.fileService.create({
           isFolder,
           ext,
           fileName,
           size,
           siteId,
+          parent,
         });
 
         if (ext === '.html') {
-          countFiles += 1;
+          countFiles++;
           ioServer.emit('UPDATE_COUNT_FILES', { siteId ,count: countFiles })
+        }
+
+        if (isFolder) {
+          await this.scanFolder(path.join(pathFolder, newFile.fileName), siteId, newFile.id, countFiles)
         }
       }
     }
   }
 
+  // Stage 3
   async generateTextIds(siteId: number, langList: string[], url: string) {
     const findFiles = await this.fileService.findAll({
       where: { siteId, ext: '.html', isFolder: false },

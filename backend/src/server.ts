@@ -48,7 +48,6 @@ app.use(cors({
 }));
 
 app.use(async (ctx, next) => {
-  await next();
   const domain = ctx.header.host;
 
   const splitUrl = ctx.url.split('/');
@@ -64,13 +63,14 @@ app.use(async (ctx, next) => {
       where: { domain, active: true },
     });
   
-    if(!findSite) {
+    if (!findSite) {
       return ctx.status = 404
     }
-    
+
     const redirectUrl = `${findSite.id}/${splitUrl.slice(2).join('/')}`;
     await send(ctx, redirectUrl, { root: viewsPath });
   }
+  await next();
 });
 
 app.use(async (ctx, next) => {
