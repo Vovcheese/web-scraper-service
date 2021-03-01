@@ -5,7 +5,7 @@ import renderFile from '@routes/render/renderFile';
 
 const router = new Router();
 
-// router.get('/', redirectToDefaultLang);
+router.get('/', redirectToDefaultLang);
 
 router.get('/:lang', renderIndex);
 

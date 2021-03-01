@@ -11,5 +11,5 @@ export default async (ctx: Context) => {
       return (ctx.status = 404)
     }
   
-    ctx.redirect(`/${findSite.lang}`)
+    await ctx.redirect(`/${findSite.lang}/`)
   }
