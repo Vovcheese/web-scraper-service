@@ -21,12 +21,12 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
 
     const findFilesSite = await this.findAll({ where: { siteId, ext: '.html', id: { [op.ne]: fileId } } })
 
-    const mainHead = cheerioService.findHead(html)
+    const mainHead = this.cheerioService.findHead(html)
 
     for (const file of findFilesSite) {
       const pathFile = path.join(process.cwd(), 'views', String(siteId), file.fileName);
       const readFile = await fs.readFile(pathFile);
-      const resultHtml = cheerioService.replaceHeader(readFile.toString(), mainHead)
+      const resultHtml = this.cheerioService.replaceHeader(readFile.toString(), mainHead)
       await fs.writeFile(pathFile, resultHtml);
     }
   }

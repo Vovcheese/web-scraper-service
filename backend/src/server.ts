@@ -67,6 +67,7 @@ app.use(async (ctx, next) => {
     if(!findSite) {
       return ctx.status = 404
     }
+    
     const redirectUrl = `${findSite.id}/${splitUrl.slice(2).join('/')}`;
     await send(ctx, redirectUrl, { root: viewsPath });
   }

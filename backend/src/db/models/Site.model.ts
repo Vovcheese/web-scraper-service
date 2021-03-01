@@ -21,10 +21,15 @@ class SiteModel extends Model<SiteModel> {
   @AllowNull(false)
   @Column(DataType.TEXT)
   domain: string;
-
+  
   @Default(false)
   @Column(DataType.BOOLEAN)
   active: boolean;
+
+  @AllowNull(false)
+  @Default('ru')
+  @Column(DataType.STRING)
+  lang: string;
 
   @HasMany(() => TranslationsModel, { foreignKey: 'siteId', onDelete: 'CASCADE' })
   translations: TranslationsModel[];

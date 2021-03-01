@@ -7,6 +7,7 @@ interface IScrapeBody {
   name: string;
   link: string;
   languages: string[];
+  defaultLang: string;
 }
 
 export default async (ctx: Context) => {
@@ -27,6 +28,7 @@ export default async (ctx: Context) => {
 
   const site = await siteService.create({
     domain,
+    lang: body.defaultLang || 'ru',
     name: body.name,
     url: body.link,
   });
