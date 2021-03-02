@@ -4,7 +4,7 @@ import FileModel from '@db/models/File.model';
 import { repos, op} from '@db/index';
 import { cheerioService, ICheerioService } from '@/services/cheerio/index';
 import path from 'path';
-import { promises as fs } from 'fs';
+import mfs, { promises as fs } from 'fs';
 
 export interface IFolderStructure {
   folders: { child: IFolderStructure, folder: FileModel }[],
@@ -55,8 +55,7 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
       let parent = findFile.parent;
   
       while (parent !== 0) {
-        console.log(parent)
-        const findFolder = await this.findOne({where: { id: parent }})
+        const findFolder = await this.findOne({ where: { id: parent }})
         parent = findFolder.parent
         pathArray.push(findFolder.fileName)
       }
@@ -66,7 +65,7 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
       pathFile = path.join(pathFile, findFile.fileName);
     }
 
-    return { siteId:findFile.siteId, path: pathFile }
+    return { siteId: findFile.siteId, path: pathFile, file:findFile }
   }
 
   async generateFileStructure(siteId: number, parent: number, structure: IFolderStructure) {
@@ -89,6 +88,52 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
     }
   }
 
+  async deleteFile(fileId: number) {
+    const result = await this.getFilePath(fileId);
+    if(result.file.isFolder) {
+      await fs.rmdir(result.path, { recursive: true });
+      await this.deleteRecursiveFolderDb(result.file.id);
+    } else {
+      await fs.unlink(result.path);
+    }
+    await result.file.destroy();
+  }
+
+  async deleteRecursiveFolderDb(folderId: number) {
+    const findFolders = await this.findAll({ where: { parent: folderId, isFolder: true } })
+    for (const folder of findFolders) {
+      await this.deleteRecursiveFolderDb(folder.id);
+    }
+    await this.delete({ where: { parent: folderId, isFolder: false } })
+    await this.delete({ where: { id: folderId } })
+  }
+
+  async uploadFiles(parent: number, siteId: number, files: any) {
+    let writePath = path.join(process.cwd(),'views', String(siteId));
+
+    if(parent !== 0) {
+      const result = await this.getFilePath(parent);
+      writePath = result.path;
+    }
+    
+    if(!Array.isArray(files)) {
+      files = [files];
+    }
+
+    for (const file of files) {
+      await this.create({
+        siteId,
+        parent,
+        fileName: file.name,
+        size: file.size,
+        ext: path.extname(file.name),
+      })
+      const ws = mfs.createWriteStream(path.join(writePath, file.name));
+      const rs = mfs.createReadStream(file.path);
+  
+      await rs.pipe(ws);
+    }
+  }
 }
 
 export default new FileService(
