@@ -5,9 +5,6 @@ import { repos, op} from '@db/index';
 import { cheerioService, ICheerioService } from '@/services/cheerio/index';
 import path from 'path';
 import mfs, { promises as fs } from 'fs';
-import translationService, { ITranslationService } from '@services/domain/Translation/index';
-// import pipelineService, { IPipelineService } from '@services/domain/Pipeline/index';
-import siteService, { ISiteService } from '@services/domain/Site/index';
 
 export interface IFolderStructure {
   folders: { child: IFolderStructure, folder: FileModel }[],
@@ -31,9 +28,7 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
   constructor(
     private fileRepository: Repository<FileModel>,
     private cheerioService: ICheerioService,
-    private translationService: ITranslationService,
-    // private pipelineService: IPipelineService,
-    private siteService: ISiteService,
+
   ) {
     super(fileRepository);
   }
@@ -44,8 +39,6 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
     const findFilesSite = await this.findAll({ where: { siteId, ext: '.html', id: { [op.ne]: fileId } } })
 
     const mainHead = this.cheerioService.findHead(html);
-
-    // console.log('mainHead', mainHead);
 
     for (const file of findFilesSite) {
       const pathFile = path.join(process.cwd(), 'views', String(siteId), file.fileName);
@@ -149,12 +142,6 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
   
       await rs.pipe(ws);
     }
-
-    // const langList = await this.translationService.getLangList(siteId);
-
-    // const findSite = await this.siteService.findOne({where: { id: siteId }})
-
-    // await this.pipelineService.processGenerateTextIdsStage(siteId, langList, findSite.url);
   }
 }
 
@@ -162,8 +149,5 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
 
 export default new FileService(
   repos.fileRepositiory,
-  cheerioService,
-  translationService,
-  // pipelineService,
-  siteService,
+  cheerioService
 );

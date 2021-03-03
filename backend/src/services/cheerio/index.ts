@@ -33,14 +33,15 @@ class CheerioService implements ICheerioService{
 
     replaceHeader(html:string, mainHeader: cheerio.Cheerio) {
         const $ = cheerio.load(html);
-        const title = this.findTitle(html);
+        
         const head = $('head');
+        const title = head.find('title');
         const titleMainHead = mainHeader.find('title')
         
         titleMainHead.remove()
 
         head.empty()
-        head.append($(title).html())
+        head.append(title)
         head.append(mainHeader.html())
 
         return $.html()
