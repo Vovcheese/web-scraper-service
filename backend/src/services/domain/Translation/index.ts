@@ -36,7 +36,7 @@ export class TranslationService extends BaseCRUD<TranslationModel> implements IT
           status: { [op.ne]: EStatus.SUCCESS } 
         }, 
         order: [['id', 'ASC']], 
-        limit: limit || 500 
+        limit: limit || 250 
       });
 
       
@@ -62,9 +62,14 @@ export class TranslationService extends BaseCRUD<TranslationModel> implements IT
       try {
         const results = await Promise.all(promises);
         for (const result of results) {
+          const text = result.translation.text;
           result.translation.text = result.outputText;
           result.translation.status = EStatus.SUCCESS;
-          await result.translation.save()
+          await result.translation.save();
+          await this.update(
+            { text: result.outputText, status: EStatus.SUCCESS }, 
+            { where: { text }
+          });
         }
         countTranslate += results.length || 0;
         ioServer.emit('UPDATE_COUNT_TRANSLATES', { siteId, count: countTranslate });
