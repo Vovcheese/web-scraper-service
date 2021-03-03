@@ -68,7 +68,7 @@ export class TranslationService extends BaseCRUD<TranslationModel> implements IT
           await result.translation.save();
           await this.update(
             { text: result.outputText, status: EStatus.SUCCESS }, 
-            { where: { text }
+            { where: { text,lang: result.translation.lang }
           });
         }
         countTranslate += results.length || 0;
