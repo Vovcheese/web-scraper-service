@@ -50,4 +50,4 @@ export class RenderService implements IRenderService{
 }
 
 
-export const renderService = new RenderService(siteService, translationService, fileService)
+export default new RenderService(siteService, translationService, fileService)

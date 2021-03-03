@@ -85,7 +85,7 @@ export default class ScraperService<T> implements IScraperService<T> {
   // Stage 3
   async generateTextIds(siteId: number, langList: string[], url: string) {
     const findFiles = await this.fileService.findAll({
-      where: { siteId, ext: '.html', isFolder: false },
+      where: { siteId, ext: '.html', isFolder: false, status: EStatus.PENDING },
     });
 
     const socketData =  { count: 0 }
@@ -105,8 +105,6 @@ export default class ScraperService<T> implements IScraperService<T> {
         const childrens = $('body').children();
 
         const domain = url.split('/').slice(0, 3).join('/');
-
-        
 
         const result = await this.searchTextNodeFile(
           $,

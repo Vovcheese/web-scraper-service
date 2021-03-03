@@ -10,6 +10,8 @@ import PipelineModel from '@models/Pipeline.model';
 import SiteModel from '@models/Site.model';
 import TranslationModel from '@models/Translation.model';
 
+export const seq = Sequelize;
+
 
 const sequelize = new Sequelize(config.bd.mysql);
 

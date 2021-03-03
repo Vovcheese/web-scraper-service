@@ -1,22 +1,32 @@
 import { Context } from "koa";
-import { renderService } from '@services/render/index';
+import renderService from '@services/render/index';
+import siteService from '@services/domain/Site/index';
+import path from 'path';
 
 export default async (ctx: Context) => {
     const domain = ctx.header.host;
-    const lang = ctx.params.lang;
-    const fileName = "index.html";
+    let lang = ctx.params.lang;
+    let fileName = "index.html";
+    const ext = path.extname(lang);
 
-    const splitUrl = ctx.url.split('/');
-    const file = splitUrl[splitUrl.length - 1];
-    const splitFile = file.split('.');
-    const ext = splitFile[splitFile.length - 1];
+    if(ext && ext === '.html') {
+        fileName = lang;
+        const findSite = await siteService.findOne(
+            {
+                where: {
+                    domain,
+                    active: true
+                }
+            }
+        )
 
-    console.log('splitUrl', splitUrl);
+        if(!findSite) return ctx.status = 404;
+
+        lang = findSite.lang;
+    }
     
     const result = await renderService.getRenderData(domain, fileName, lang);
 
-    console.log(result)
-    
     await ctx.render(`${result.siteId}/${fileName}`, result.data);
 }
   

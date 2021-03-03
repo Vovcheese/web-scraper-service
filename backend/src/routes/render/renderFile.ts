@@ -1,13 +1,11 @@
 import { Context } from "koa";
-import { renderService } from '@services/render/index';
+import renderService from '@services/render/index';
 
 export default async (ctx: Context) => {
-    const domain = ctx.header.host
-    const lang = ctx.params.lang || "default"
-    const fileName = ctx.params.fileName || "index.html"
+    const domain = ctx.header.host;
+    const lang = ctx.params.lang || "default";
+    const fileName = ctx.params.fileName || "index.html";
 
-    console.log('fileName', fileName)
-    
     const result = await renderService.getRenderData(domain, fileName, lang)
 
     if (Object.keys(result.data).length) {

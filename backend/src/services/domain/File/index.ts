@@ -5,6 +5,9 @@ import { repos, op} from '@db/index';
 import { cheerioService, ICheerioService } from '@/services/cheerio/index';
 import path from 'path';
 import mfs, { promises as fs } from 'fs';
+import translationService, { ITranslationService } from '@services/domain/Translation/index';
+// import pipelineService, { IPipelineService } from '@services/domain/Pipeline/index';
+import siteService, { ISiteService } from '@services/domain/Site/index';
 
 export interface IFolderStructure {
   folders: { child: IFolderStructure, folder: FileModel }[],
@@ -14,14 +17,25 @@ export interface IFolderStructure {
 export interface IFileService extends BaseCRUD<FileModel> {
   replaceFileHeaders(siteId: number, fileId: number, html:string): Promise<void>
   generateFileStructure(siteId: number, parent: number, structure: IFolderStructure): Promise<void>
+  getFilePath(fileId: number): Promise<{
+    siteId: number;
+    path: string; 
+    file: FileModel;
+  }>;
+  deleteFile(fileId: number): Promise<void>;
+  deleteRecursiveFolderDb(folderId: number): Promise<void>;
+  uploadFiles(parent: number, siteId: number, files: any): Promise<void>;
 }
 
 export class FileService extends BaseCRUD<FileModel> implements IFileService{
   constructor(
-    private translationRepositiory: Repository<FileModel>,
-    private cheerioService: ICheerioService
+    private fileRepository: Repository<FileModel>,
+    private cheerioService: ICheerioService,
+    private translationService: ITranslationService,
+    // private pipelineService: IPipelineService,
+    private siteService: ISiteService,
   ) {
-    super(translationRepositiory);
+    super(fileRepository);
   }
 
   async replaceFileHeaders(siteId: number, fileId: number, html:string) {
@@ -29,7 +43,9 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
 
     const findFilesSite = await this.findAll({ where: { siteId, ext: '.html', id: { [op.ne]: fileId } } })
 
-    const mainHead = this.cheerioService.findHead(html)
+    const mainHead = this.cheerioService.findHead(html);
+
+    // console.log('mainHead', mainHead);
 
     for (const file of findFilesSite) {
       const pathFile = path.join(process.cwd(), 'views', String(siteId), file.fileName);
@@ -133,10 +149,21 @@ export class FileService extends BaseCRUD<FileModel> implements IFileService{
   
       await rs.pipe(ws);
     }
+
+    // const langList = await this.translationService.getLangList(siteId);
+
+    // const findSite = await this.siteService.findOne({where: { id: siteId }})
+
+    // await this.pipelineService.processGenerateTextIdsStage(siteId, langList, findSite.url);
   }
 }
 
+
+
 export default new FileService(
   repos.fileRepositiory,
-  cheerioService
+  cheerioService,
+  translationService,
+  // pipelineService,
+  siteService,
 );

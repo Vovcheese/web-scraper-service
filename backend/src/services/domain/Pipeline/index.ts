@@ -7,9 +7,11 @@ import { EStatus, ETypePipeline } from '@db/interfaces';
 import { ioServer } from '../../../app';
 import { repos } from '@db/index';
 
-import { webScraperService } from '@services/scraper/index';
+import webScraperService from '@services/scraper/index';
 import { IScraperService } from '@services/scraper/lib/index';
 import translationService, { ITranslationService } from '@services/domain/Translation/index';
+
+
 export interface IPipelineService extends BaseCRUD<PipelineModel> {
   createPipeline(siteId: number): Promise<PipelineModel[]>;
   changeStatus(
@@ -20,10 +22,10 @@ export interface IPipelineService extends BaseCRUD<PipelineModel> {
   ): Promise<[number, PipelineModel[]]>;
   processDownloadStage(siteId: number, link: string): any;
   processFileSearchingStage(siteId: number): any;
-  processGenerateTextIdsStage(siteId: number, langList: string[], domain: string): any;
+  processGenerateTextIdsStage(siteId: number, langList: string[], url: string): any;
 }
 
-export class PiplineService
+export class PipelineService
   extends BaseCRUD<PipelineModel>
   implements IPipelineService {
   constructor(
@@ -148,7 +150,7 @@ export class PiplineService
   async processGenerateTextIdsStage(
     siteId: number,
     langList: string[],
-    domain: string,
+    url: string,
   ) {
     try {
       await this.changeStatus(
@@ -159,7 +161,7 @@ export class PiplineService
 
       const startTime = Date.now();
 
-      await this.webScraperService.generateTextIds(siteId, langList, domain);
+      await this.webScraperService.generateTextIds(siteId, langList, url);
 
       const endTime = Date.now() - startTime;
 
@@ -225,8 +227,10 @@ export class PiplineService
   }
 }
 
-export default new PiplineService(
+
+
+export default new PipelineService(
   repos.pipelineRepositiory,
   webScraperService,
-  translationService
-  );
+  translationService,
+);

@@ -4,7 +4,7 @@ import WebScraperProvider from '@services/scraper/lib/providers/WebScraperProvid
 import fileService from '@services/domain/File/index';
 import translationService from '@services/domain/Translation/index';
 
-export const webScraperService = new ScraperService<scrape.Options>(
+export default new ScraperService<scrape.Options>(
   new WebScraperProvider(),
   fileService,
   translationService,

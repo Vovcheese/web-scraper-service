@@ -1,7 +1,7 @@
 import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
 import fileService from '@services/domain/File/index';
-import pipelineService from '@services/domain/Pipline/index';
+import pipelineService from '@services/domain/Pipeline/index';
 import { EStatus, ETypePipeline } from '@db/interfaces';
 
 export default async (ctx: Context) => {
@@ -28,7 +28,7 @@ export default async (ctx: Context) => {
 
   await fileService.delete({ where: { siteId } });
 
-  await siteService.processFileSearchingStage(findSite.id);
+  await pipelineService.processFileSearchingStage(findSite.id);
 
   ctx.body = { success: true };
 };

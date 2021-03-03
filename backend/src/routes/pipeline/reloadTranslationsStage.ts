@@ -1,6 +1,6 @@
 import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
-import pipelineService from '@services/domain/Pipline/index';
+import pipelineService from '@services/domain/Pipeline/index';
 import { ETypePipeline } from '@db/interfaces';
 
 interface IBody {

@@ -1,7 +1,7 @@
 import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
 import translationService from '@services/domain/Translation/index';
-import pipelineService from '@services/domain/Pipline/index';
+import pipelineService from '@services/domain/Pipeline/index';
 import { EStatus, ETypePipeline } from '@db/interfaces';
 
 interface IBody {
@@ -33,7 +33,7 @@ export default async (ctx: Context) => {
 
   await translationService.delete({ where: { siteId, default: false } });
 
-  await siteService.processGenerateTextIdsStage(findSite.id, body.langList, findSite.url);
+  await pipelineService.processGenerateTextIdsStage(findSite.id, body.langList, findSite.url);
 
   ctx.body = { success: true };
 };

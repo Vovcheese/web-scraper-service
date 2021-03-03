@@ -22,7 +22,9 @@ export class SiteService extends BaseCRUD<SiteModel> implements ISiteService{
     try {
       await fs.stat(pathFolder);
       await fs.rmdir(pathFolder, { recursive: true });
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
   }
 }
 
