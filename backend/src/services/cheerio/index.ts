@@ -13,9 +13,9 @@ class CheerioService implements ICheerioService{
     findTitle(html:string) {
         const $ = cheerio.load(html);
         const head = $('head');
-        const childrens = head.children();
+        const childrens = head.children() as unknown;
         let findTitle
-
+        
         for (const item of Object.values(childrens)) {
             if(item.name === 'title') {
                 findTitle = item

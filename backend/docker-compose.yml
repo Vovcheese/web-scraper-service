@@ -1,0 +1,18 @@
+version: '3'
+services:
+  scraper-backend:
+    build: .
+    ports:
+      - '4050:4050'
+    volumes:
+      - ./views
+    networks:
+      - scraper-network
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_PORT=3306
+    tty: true
+
+networks:
+  scraper-network:
+    external: true

@@ -10,8 +10,8 @@ services:
     ports:
       - '4306:3306'
     networks:
-      - scraper-backend
+      - scraper-network
 
 networks:
-  scraper-backend:
+  scraper-network:
     external: true
