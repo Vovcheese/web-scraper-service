@@ -12,7 +12,6 @@ import TranslationModel from '@models/Translation.model';
 
 export const seq = Sequelize;
 
-
 const sequelize = new Sequelize(config.bd.mysql);
 
 export const op = Op;
@@ -21,9 +20,9 @@ const force = process.env.FORCE_DB === 'true'
 
 sequelize.authenticate().then(async () => {
   console.log('success connect to db force', force);
-  await sequelize.sync()
-  await run('seeders')
-  await run('migrations')
+  await sequelize.sync();
+  await run('seeders');
+  await run('migrations');
   
 }).catch((error) => {
   console.error('Unable to connect to the database:', error);

@@ -134,7 +134,7 @@ export default class ScraperService<T> implements IScraperService<T> {
 
   async searchTextNodeFile(
     $: cheerio.Root,
-    childrens: cheerio.Cheerio | cheerio.Element[],
+    childrens: unknown,
     siteId: number,
     domain:string,
     fileId:number,
@@ -142,6 +142,16 @@ export default class ScraperService<T> implements IScraperService<T> {
     socketData: ISocketData
   ) {
     for (const [_, child] of Object.entries(childrens)) {
+      if (child.type === 'script') {
+        if(child.children && child.children.length) {
+          for (const scriptTextNode of child.children) {
+            if(scriptTextNode.data.indexOf('https://mc.yandex.ru/metrika') !== -1) {
+              $(child).remove();
+              break
+            }
+          }
+        }
+      }
       if (child.type === 'tag') {
         if (child.name === 'a') {
           if (child.attribs && child.attribs.href && child.attribs.href.startsWith(domain)) {
