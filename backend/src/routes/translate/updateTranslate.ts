@@ -25,5 +25,5 @@ export default async (ctx: Context) => {
 
   await findTranslation.save();
 
-  ctx.body = { ...findTranslation };
+  ctx.body = { ...findTranslation.toJSON() };
 };

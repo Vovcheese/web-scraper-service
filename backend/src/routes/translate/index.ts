@@ -14,6 +14,6 @@ router.get('/list/:siteId', getTranslateList);
 
 router.post('/add/:siteId', addTranslate);
 
-router.patch('/:translateId/', updateTranslate);
+router.post('/:translateId', updateTranslate);
 
 export default router;
