@@ -7,7 +7,7 @@ export interface ICheerioService {
 }
 
 
-class CheerioService implements ICheerioService{
+export class CheerioService implements ICheerioService{
     constructor() {}
 
     findTitle(html:string) {

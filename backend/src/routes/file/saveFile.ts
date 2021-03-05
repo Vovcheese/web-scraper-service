@@ -1,5 +1,5 @@
 import { Context } from 'koa';
-import fileService from '@services/domain/File/index';
+import { fileServiceFactory } from '@services/index';
 import { promises as fs } from 'fs';
 interface ISaveFileBody {
   code: string;
@@ -11,12 +11,12 @@ export default async (ctx: Context) => {
   const body: ISaveFileBody = ctx.request.body;
   const replaceHeaders = body.replaceHeaders;
 
-  const result = await fileService.getFilePath(fileId)
+  const result = await fileServiceFactory().getFilePath(fileId)
 
   await fs.writeFile(result.path, body.code);
 
   if (replaceHeaders) {
-    await fileService.replaceFileHeaders(result.siteId, fileId, body.code)
+    await fileServiceFactory().replaceFileHeaders(result.siteId, fileId, body.code)
   }
 
   ctx.body = { success: true };

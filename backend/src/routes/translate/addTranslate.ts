@@ -1,5 +1,7 @@
 import { Context } from "koa"
-import translationService from "@services/domain/Translation/index"
+import { 
+  translationServiceFactory
+} from '@services/index';
 import TranslationModel from "@models/Translation.model"
 
 interface ITranslateBody {
@@ -14,7 +16,7 @@ export default async (ctx: Context) => {
     throw new Error("Lang list is empty")
   }
 
-  const findDefaultTranslate = await translationService.findAll({
+  const findDefaultTranslate = await translationServiceFactory().findAll({
     where: { siteId, default: true },
   })
 
@@ -26,7 +28,7 @@ export default async (ctx: Context) => {
 
   for (const lang of body.langList) {
     for (const defaultTranslate of findDefaultTranslate) {
-      const findTranslation = await translationService.findOne({
+      const findTranslation = await translationServiceFactory().findOne({
         where: {
           siteId,
           lang,
@@ -49,7 +51,7 @@ export default async (ctx: Context) => {
     }
   }
 
-  await translationService.bulkCreate(translateObject)
+  await translationServiceFactory().bulkCreate(translateObject)
 
   ctx.body = { success: true }
 }

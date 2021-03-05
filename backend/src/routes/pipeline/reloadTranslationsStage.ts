@@ -1,6 +1,5 @@
 import { Context } from 'koa';
-import siteService from '@services/domain/Site/index';
-import pipelineService from '@services/domain/Pipeline/index';
+import { siteServiceFactory, pipelineServiceFactory } from '@services/index';
 import { ETypePipeline } from '@db/interfaces';
 
 interface IBody {
@@ -12,22 +11,22 @@ export default async (ctx: Context) => {
   const siteId = Number(ctx.params.siteId);
   const limit = Number(body.limit) || 0;
 
-  const findSite = await siteService.findOne({ where: { id: siteId } });
+  const findSite = await siteServiceFactory().findOne({ where: { id: siteId } });
 
   if (!findSite) {
     throw new Error('Site not found');
   }
 
-  const findPipeline = await pipelineService.findOne({
+  const findPipeline = await pipelineServiceFactory().findOne({
     where: {
       siteId,
       type: ETypePipeline.TRANSLATING,
     },
   });
 
-  await pipelineService.reloadStatus(findPipeline);
+  await pipelineServiceFactory().reloadStatus(findPipeline);
 
-  await pipelineService.processTranslationStage(findSite.id, limit);
+  await pipelineServiceFactory().processTranslationStage(findSite.id, limit);
 
   ctx.body = { success: true };
 };

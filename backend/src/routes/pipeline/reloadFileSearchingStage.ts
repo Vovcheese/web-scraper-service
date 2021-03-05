@@ -1,19 +1,17 @@
 import { Context } from 'koa';
-import siteService from '@services/domain/Site/index';
-import fileService from '@services/domain/File/index';
-import pipelineService from '@services/domain/Pipeline/index';
+import { siteServiceFactory, pipelineServiceFactory, fileServiceFactory } from '@services/index';
 import { EStatus, ETypePipeline } from '@db/interfaces';
 
 export default async (ctx: Context) => {
   const siteId = Number(ctx.params.siteId);
 
-  const findSite = await siteService.findOne({ where: { id: siteId } });
+  const findSite = await siteServiceFactory().findOne({ where: { id: siteId } });
 
   if (!findSite) {
     throw new Error('Site not found');
   }
 
-  const findPipeline = await pipelineService.findOne({
+  const findPipeline = await pipelineServiceFactory().findOne({
     where: {
       siteId,
       type: ETypePipeline.FILESEARCHING,
@@ -24,11 +22,11 @@ export default async (ctx: Context) => {
     throw new Error('The pipeline cannot be started');
   }
 
-  await pipelineService.reloadStatus(findPipeline);
+  await pipelineServiceFactory().reloadStatus(findPipeline);
 
-  await fileService.delete({ where: { siteId } });
+  await fileServiceFactory().delete({ where: { siteId } });
 
-  await pipelineService.processFileSearchingStage(findSite.id);
+  await pipelineServiceFactory().processFileSearchingStage(findSite.id);
 
   ctx.body = { success: true };
 };

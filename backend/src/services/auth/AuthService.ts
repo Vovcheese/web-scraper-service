@@ -13,7 +13,7 @@ interface ILoginBody {
   login: string;
   password: string;
 }
-export default class AuthService {
+export class AuthService {
   constructor (private userService: IUserService) {}
 
   async register(body: IRegisterBody) {

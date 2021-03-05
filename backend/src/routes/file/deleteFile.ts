@@ -1,10 +1,10 @@
 import { Context } from 'koa';
-import fileService from '@services/domain/File/index';
+import { fileServiceFactory } from '@services/index';
 
 export default async (ctx: Context) => {
   const fileId = Number(ctx.params.fileId);
 
-  await fileService.deleteFile(fileId);
+  await fileServiceFactory().deleteFile(fileId);
 
   ctx.body = { success: true };
 };

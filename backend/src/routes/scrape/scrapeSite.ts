@@ -1,7 +1,7 @@
 import uuid from 'uuid';
 import { Context } from 'koa';
 import siteService from '@services/domain/Site/index';
-import pipelineService from '@services/domain/Pipeline/index';
+import { pipelineServiceFactory } from '@services/index';
 
 interface IScrapeBody {
   name: string;
@@ -34,6 +34,8 @@ export default async (ctx: Context) => {
   });
 
   const langList = body.languages || [];
+
+  const pipelineService = pipelineServiceFactory();
 
   pipelineService
     .processDownloadStage(site.id, site.url)

@@ -1,10 +1,11 @@
 import { Context } from 'koa';
-import siteService from '@services/domain/Site/index';
-import fileService from '@services/domain/File/index';
-import translationService from '@services/domain/Translation/index';
+import { 
+  siteServiceFactory,
+  fileServiceFactory,
+  translationServiceFactory
+} from '@services/index';
 import SiteModel from '@db/models/Site.model';
-import sequelize, { op } from '@db/index';
-import PipelineModel from '@db/models/Pipeline.model';
+import { repos } from '@db/index';
 import { EStatus } from '@/db/interfaces';
 
 interface IListSite {
@@ -33,18 +34,16 @@ export default async (ctx: Context) => {
   const page = Number(ctx.query.page) || 1;
   const limit = Number(ctx.query.pageSize) || 50;
 
-  const pipelineRepository = sequelize.getRepository(PipelineModel)
-
-  const list = (await siteService.list(
+  const list = (await siteServiceFactory().list(
     {
-      include: [pipelineRepository],
+      include: [repos.pipelineRepositiory],
       where: { domain },
     },
     page,
     limit,
   )) as IListSite;
 
-  const countFiles = ((await fileService.count({
+  const countFiles = ((await fileServiceFactory().count({
     attributes: ['siteId'],
     where: {
       ext: '.html',
@@ -52,18 +51,18 @@ export default async (ctx: Context) => {
     group: 'siteId',
   })) as unknown) as ICountSite[];
 
-  const countAllTexts = ((await translationService.count({
+  const countAllTexts = ((await translationServiceFactory().count({
     attributes: ['siteId'],
     group: 'siteId',
   })) as unknown) as ICountSite[];
 
-  const countDefaultTexts = ((await translationService.count({
+  const countDefaultTexts = ((await translationServiceFactory().count({
     attributes: ['siteId'],
     where: { default: true },
     group: 'siteId',
   })) as unknown) as ICountSite[];
 
-  const countTranslatedTexts = ((await translationService.count({
+  const countTranslatedTexts = ((await translationServiceFactory().count({
     attributes: ['siteId'],
     where: {
       status: EStatus.SUCCESS 

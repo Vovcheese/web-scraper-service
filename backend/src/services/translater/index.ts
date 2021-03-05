@@ -26,7 +26,7 @@ interface ItranslaterProvider {
     translate(text: string, lang: string): Promise<ITranslateResponse>
 }
 
-class TranslatteProvider implements ItranslaterProvider {
+export class TranslatteProvider implements ItranslaterProvider {
     constructor() {}
 
     async translate(text: string, lang: string) {
@@ -37,7 +37,7 @@ class TranslatteProvider implements ItranslaterProvider {
     }
 }
 
-class DeeplProvider implements ItranslaterProvider {
+export class DeeplProvider implements ItranslaterProvider {
     constructor(private apiKey: string) {}
 
     async translate(text: string, lang: string) {
@@ -63,7 +63,7 @@ class DeeplProvider implements ItranslaterProvider {
     }
 }
 
-class TranslaterService implements ITranslaterService{
+export class TranslaterService implements ITranslaterService{
     constructor(private translaterProvider: ItranslaterProvider) {}
 
     async translate(translation: TranslationModel) {

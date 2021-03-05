@@ -1,13 +1,15 @@
 
 import { Context } from 'koa';
-import siteService from '@services/domain/Site/index';
+import { 
+  siteServiceFactory
+} from '@services/index';
 
 export default async (ctx: Context) => {
   const siteId = Number(ctx.params.siteId);
 
-  await siteService.removeSiteFolder(siteId);
+  await siteServiceFactory().removeSiteFolder(siteId);
 
-  const findSite = await siteService.findOne({ where: { id: siteId } });
+  const findSite = await siteServiceFactory().findOne({ where: { id: siteId } });
 
   await findSite.destroy();
 

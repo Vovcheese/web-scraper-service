@@ -1,7 +1,5 @@
 import { Context } from 'koa';
-import siteService from '@services/domain/Site/index';
-import translationService from '@services/domain/Translation/index';
-import pipelineService from '@services/domain/Pipeline/index';
+import { siteServiceFactory, pipelineServiceFactory, translationServiceFactory } from '@services/index';
 import { EStatus, ETypePipeline } from '@db/interfaces';
 
 interface IBody {
@@ -12,13 +10,13 @@ export default async (ctx: Context) => {
   const siteId = Number(ctx.params.siteId);
   const body: IBody = ctx.request.body;
 
-  const findSite = await siteService.findOne({ where: { id: siteId } });
+  const findSite = await siteServiceFactory().findOne({ where: { id: siteId } });
 
   if (!findSite) {
     throw new Error('Site not found');
   }
 
-  const findPipeline = await pipelineService.findOne({
+  const findPipeline = await pipelineServiceFactory().findOne({
     where: {
       siteId,
       type: ETypePipeline.GENERATEID,
@@ -29,11 +27,11 @@ export default async (ctx: Context) => {
     throw new Error('The pipeline cannot be started');
   }
 
-  await pipelineService.reloadStatus(findPipeline);
+  await pipelineServiceFactory().reloadStatus(findPipeline);
 
-  await translationService.delete({ where: { siteId, default: false } });
+  await translationServiceFactory().delete({ where: { siteId, default: false } });
 
-  await pipelineService.processGenerateTextIdsStage(findSite.id, body.langList, findSite.url);
+  await pipelineServiceFactory().processGenerateTextIdsStage(findSite.id, body.langList, findSite.url);
 
   ctx.body = { success: true };
 };

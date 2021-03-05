@@ -1,5 +1,7 @@
 import { Context } from 'koa';
-import translationService from '@services/domain/Translation/index';
+import { 
+  translationServiceFactory
+} from '@services/index';
 
 interface ITranslateBody {
   text: string;
@@ -9,7 +11,7 @@ export default async (ctx: Context) => {
   const translateId = Number(ctx.params.translateId);
   const body: ITranslateBody = ctx.request.body;
 
-  const findTranslation = await translationService.findOne({
+  const findTranslation = await translationServiceFactory().findOne({
     where: { id: translateId },
   });
 

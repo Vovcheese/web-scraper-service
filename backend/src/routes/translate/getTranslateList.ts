@@ -1,5 +1,7 @@
 import { Context } from 'koa';
-import translationService from '@services/domain/Translation/index';
+import { 
+  translationServiceFactory
+} from '@services/index';
 import sequelize, { op } from '@db/index';
 import FileModel from '@db/models/File.model';
 import SiteModel from '@db/models/Site.model';
@@ -43,7 +45,7 @@ export default async (ctx: Context) => {
     whereObj.status = { [op.in]: statuses }
   }
 
-  const list = await translationService.list(
+  const list = await translationServiceFactory().list(
     {
       include:[fileRepository, siteRepository],
       where: { ...whereObj },

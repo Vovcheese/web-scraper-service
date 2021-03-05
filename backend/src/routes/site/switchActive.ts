@@ -1,16 +1,18 @@
 
 import { Context } from 'koa';
-import siteService from '@services/domain/Site/index';
+import { 
+  siteServiceFactory
+} from '@services/index';
 import { op } from '@db/index';
 
 export default async (ctx: Context) => {
   const siteId = Number(ctx.params.siteId);
 
-  const findSite = await siteService.findOne({ where: { id: siteId } });
+  const findSite = await siteServiceFactory().findOne({ where: { id: siteId } });
 
   findSite.active = !findSite.active;
 
-  await siteService.update({ active: false }, { where: { domain: findSite.domain, id: {
+  await siteServiceFactory().update({ active: false }, { where: { domain: findSite.domain, id: {
     [op.ne]: findSite.id,
   } } });
 

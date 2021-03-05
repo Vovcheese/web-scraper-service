@@ -1,6 +1,8 @@
 import { Context } from "koa";
-import renderService from '@services/render/index';
-import siteService from '@services/domain/Site/index';
+import { 
+    renderServiceFactory,
+    siteServiceFactory
+} from '@services/index';
 import path from 'path';
 
 export default async (ctx: Context) => {
@@ -11,7 +13,7 @@ export default async (ctx: Context) => {
 
     if(ext && ext === '.html') {
         fileName = lang;
-        const findSite = await siteService.findOne(
+        const findSite = await siteServiceFactory().findOne(
             {
                 where: {
                     domain,
@@ -25,7 +27,7 @@ export default async (ctx: Context) => {
         lang = findSite.lang;
     }
     
-    const result = await renderService.getRenderData(domain, fileName, lang);
+    const result = await renderServiceFactory().getRenderData(domain, fileName, lang);
 
     await ctx.render(`${result.siteId}/${fileName}`, result.data);
 }
